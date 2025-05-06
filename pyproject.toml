@@ -374,7 +374,6 @@ Documentation = "https://docs.camel-ai.org"
 
 [tool.uv]
 default-groups = [
-    "dev",
     "docs",
 ]
 
