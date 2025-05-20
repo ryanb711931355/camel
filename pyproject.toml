@@ -376,10 +376,6 @@ Repository = "https://github.com/camel-ai/camel"
 Documentation = "https://docs.camel-ai.org"
 
 [tool.uv]
-default-groups = [
-    "dev",
-    "docs",
-]
 
 [tool.uv.sources]
 bohrium = { git = "https://github.com/dptech-corp/bohrium-openapi-python-sdk" }

@@ -1,10 +1,6 @@
 name: Pre Commit Check
 
-on:
-  push:
-    branches: [ "master", "qa" ]
-  pull_request:
-    branches: [ "master", "qa" ]
+on: push
 
 jobs:
   pre-commit:
