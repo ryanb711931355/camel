@@ -15,9 +15,6 @@ import logging
 import os
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
-from slack_sdk.oauth.installation_store.async_installation_store import (
-    AsyncInstallationStore,
-)
 from starlette import requests, responses
 
 from camel.bots.slack.models import (
@@ -29,9 +26,12 @@ from camel.bots.slack.models import (
 from camel.utils import dependencies_required
 
 if TYPE_CHECKING:
-    from slack_bolt.context.async_context import AsyncBoltContext
-    from slack_bolt.context.say.async_say import AsyncSay
-    from slack_sdk.web.async_client import AsyncWebClient
+    try:
+        from slack_bolt.context.async_context import AsyncBoltContext
+        from slack_bolt.context.say.async_say import AsyncSay
+        from slack_sdk.web.async_client import AsyncWebClient
+    except ImportError:
+        pass
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

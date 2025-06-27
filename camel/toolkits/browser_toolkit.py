@@ -730,9 +730,7 @@ class BaseBrowser:
     def close(self):
         if self.context is not None:
             self.context.close()
-        if (
-            self.browser is not None
-        ):  # Only close browser if it was launched separately
+        if self.browser is not None:  # Only close browser if it was launched separately
             self.browser.close()
         if self.playwright:
             self.playwright.stop()  # Stop playwright instance

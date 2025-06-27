@@ -17,6 +17,9 @@ from typing import TYPE_CHECKING, Any, Dict
 if TYPE_CHECKING:
     from playwright.async_api import Page
 
+if TYPE_CHECKING:
+    from playwright.async_api import Page
+
 
 class ActionExecutor:
     r"""Executes high-level actions (click, type …) on a Playwright Page."""

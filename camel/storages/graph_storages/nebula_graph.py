@@ -371,7 +371,7 @@ class NebulaGraph(BaseGraphStorage):
     def refresh_schema(self) -> None:
         r"""Refreshes the schema by fetching the latest schema details."""
         self.schema = self.get_schema()
-        self.structured_schema = self.get_structured_schema
+        self.structured_schema = self.get_structured_schema()
 
     @property
     def get_structured_schema(self) -> Dict[str, Any]:

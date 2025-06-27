@@ -270,7 +270,7 @@ class SlackToolkit(BaseToolkit):
                 )
             return str(response)
         except SlackApiError as e:
-            return f"Error creating conversation: {e.response['error']}"
+            return f"Error sending message: {e.response['error']}"
 
     def delete_slack_message(
         self,
@@ -299,7 +299,7 @@ class SlackToolkit(BaseToolkit):
             )
             return str(response)
         except SlackApiError as e:
-            return f"Error creating conversation: {e.response['error']}"
+            return f"Error deleting message: {e.response['error']}"
 
     def get_tools(self) -> List[FunctionTool]:
         r"""Returns a list of FunctionTool objects representing the
