@@ -24,7 +24,7 @@ from camel.utils import MCPServer
 if TYPE_CHECKING:
     from ssl import SSLContext
 
-    from slack_sdk import WebClient
+    from slack_sdk import WebClient  # type: ignore
 
 from camel.logger import get_logger
 from camel.toolkits import FunctionTool
@@ -114,7 +114,7 @@ class SlackToolkit(BaseToolkit):
             SlackApiError: If there is an error during get slack channel
                 information.
         """
-        from slack_sdk.errors import SlackApiError
+        from slack_sdk.errors import SlackApiError  # type: ignore
 
         try:
             slack_client = self._login_slack()
@@ -141,7 +141,7 @@ class SlackToolkit(BaseToolkit):
             SlackApiError: If there is an error during get slack channel
                 information.
         """
-        from slack_sdk.errors import SlackApiError
+        from slack_sdk.errors import SlackApiError  # type: ignore
 
         try:
             slack_client = self._login_slack()
@@ -164,7 +164,7 @@ class SlackToolkit(BaseToolkit):
             SlackApiError: If there is an error during get slack channel
                 information.
         """
-        from slack_sdk.errors import SlackApiError
+        from slack_sdk.errors import SlackApiError  # type: ignore
 
         try:
             slack_client = self._login_slack()
@@ -184,7 +184,7 @@ class SlackToolkit(BaseToolkit):
             SlackApiError: If there is an error during get slack channel
                 information.
         """
-        from slack_sdk.errors import SlackApiError
+        from slack_sdk.errors import SlackApiError  # type: ignore
 
         try:
             slack_client = self._login_slack()
@@ -220,7 +220,7 @@ class SlackToolkit(BaseToolkit):
             SlackApiError: If there is an error during get
                 slack channel message.
         """
-        from slack_sdk.errors import SlackApiError
+        from slack_sdk.errors import SlackApiError  # type: ignore
 
         try:
             slack_client = self._login_slack()
@@ -269,7 +269,7 @@ class SlackToolkit(BaseToolkit):
                     channel=channel_id, text=message
                 )
             return str(response)
-        except SlackApiError as e:
+        except SlackApiError as e:  # type: ignore
             return f"Error creating conversation: {e.response['error']}"
 
     def delete_slack_message(
@@ -298,7 +298,7 @@ class SlackToolkit(BaseToolkit):
                 channel=channel_id, ts=time_stamp
             )
             return str(response)
-        except SlackApiError as e:
+        except SlackApiError as e:  # type: ignore
             return f"Error creating conversation: {e.response['error']}"
 
     def get_tools(self) -> List[FunctionTool]:

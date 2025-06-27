@@ -198,8 +198,8 @@ class CohereModel(BaseModelBackend):
             UserChatMessageV2,
         )
 
-        tool_call_id = None
-        new_messages = []
+        tool_call_id: Optional[str] = None
+        new_messages: List["ChatMessageV2"] = []
         for msg in messages:
             role = msg.get("role")
             content = msg.get("content")
@@ -208,9 +208,11 @@ class CohereModel(BaseModelBackend):
             if role == "user":
                 new_message = UserChatMessageV2(role="user", content=content)  # type: ignore[arg-type]
             elif role in {"tool", "function"}:
+                if tool_call_id is None:
+                    raise ValueError("Tool message received without preceding assistant function call")
                 new_message = ToolChatMessageV2(
                     role="tool",
-                    tool_call_id=tool_call_id,  # type: ignore[arg-type]
+                    tool_call_id=tool_call_id,
                     content=content,  # type: ignore[assignment,arg-type]
                 )
             elif role == "assistant":
@@ -251,7 +253,7 @@ class CohereModel(BaseModelBackend):
                 raise ValueError(f"Unsupported message role: {role}")
 
             new_messages.append(new_message)
-        return new_messages  # type: ignore[return-value]
+        return new_messages
 
     @property
     def token_counter(self) -> BaseTokenCounter:

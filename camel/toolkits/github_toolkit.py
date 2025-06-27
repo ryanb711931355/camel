@@ -52,8 +52,7 @@ class GithubToolkit(BaseToolkit):
                 `get_github_access_token` method.
         """
         super().__init__(timeout=timeout)
-        from github.Auth import Token
-        from github.MainClass import Github
+        from github import Auth, Github
 
         if access_token is None:
             access_token = self.get_github_access_token()
@@ -112,7 +111,7 @@ class GithubToolkit(BaseToolkit):
         """
         repo = self.github.get_repo(repo_name)
         default_branch = repo.get_branch(repo.default_branch)
-        from github.GithubException import GithubException
+        from github import GithubException
 
         try:
             repo.create_git_ref(
@@ -130,7 +129,7 @@ class GithubToolkit(BaseToolkit):
 
         file = repo.get_contents(file_path)
 
-        from github.ContentFile import ContentFile
+        from github import ContentFile
 
         if isinstance(file, ContentFile):
             repo.update_file(

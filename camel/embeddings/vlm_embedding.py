@@ -111,11 +111,11 @@ class VisionLanguageEmbedding(BaseEmbedding[Union[str, Image.Image]]):
                     return_tensors="pt",
                     padding=True,
                     **image_processor_kwargs,
-                )
+                )  # type: ignore[arg-type]
                 image_feature = (
                     self.model.get_image_features(
                         **image_input, **model_kwargs
-                    )
+                    )  # type: ignore[arg-type]
                     .squeeze(dim=0)
                     .tolist()
                 )
@@ -126,9 +126,9 @@ class VisionLanguageEmbedding(BaseEmbedding[Union[str, Image.Image]]):
                     return_tensors="pt",
                     padding=True,
                     **tokenizer_kwargs,
-                )
+                )  # type: ignore[arg-type]
                 text_feature = (
-                    self.model.get_text_features(**text_input, **model_kwargs)
+                    self.model.get_text_features(**text_input, **model_kwargs)  # type: ignore[arg-type]
                     .squeeze(dim=0)
                     .tolist()
                 )

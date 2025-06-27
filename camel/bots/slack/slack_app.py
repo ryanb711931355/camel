@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from slack_sdk.oauth.installation_store.async_installation_store import (
     AsyncInstallationStore,
-)
+)  # type: ignore[import-not-found]
 from starlette import requests, responses
 
 from camel.bots.slack.models import (
@@ -29,9 +29,9 @@ from camel.bots.slack.models import (
 from camel.utils import dependencies_required
 
 if TYPE_CHECKING:
-    from slack_bolt.context.async_context import AsyncBoltContext
-    from slack_bolt.context.say.async_say import AsyncSay
-    from slack_sdk.web.async_client import AsyncWebClient
+    from slack_bolt.context.async_context import AsyncBoltContext  # type: ignore[import-not-found]
+    from slack_bolt.context.say.async_say import AsyncSay  # type: ignore[import-not-found]
+    from slack_sdk.web.async_client import AsyncWebClient  # type: ignore[import-not-found]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -85,9 +85,9 @@ class SlackApp:
         """
         from slack_bolt.adapter.starlette.async_handler import (
             AsyncSlackRequestHandler,
-        )
-        from slack_bolt.app.async_app import AsyncApp
-        from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
+        )  # type: ignore[import-not-found]
+        from slack_bolt.app.async_app import AsyncApp  # type: ignore[import-not-found]
+        from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings  # type: ignore[import-not-found]
 
         self.token: Optional[str] = token or os.getenv("SLACK_TOKEN")
         self.scopes: Optional[str] = scopes or os.getenv("SLACK_SCOPES")

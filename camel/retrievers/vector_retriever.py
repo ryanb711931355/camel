@@ -116,7 +116,7 @@ class VectorRetriever(BaseRetriever):
         elif isinstance(content, IOBase):
             elements = (
                 self.uio.parse_bytes(
-                    file=content, metadata_filename=metadata_filename, **kwargs
+                    file=content.read(), metadata_filename=metadata_filename, **kwargs
                 )
                 or []
             )

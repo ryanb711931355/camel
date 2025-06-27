@@ -467,8 +467,14 @@ class BaseMessage:
                 )
 
         if self.video_bytes:
-            import imageio.v3 as iio
-            import numpy as np
+            try:
+                import imageio.v3 as iio
+                import numpy as np
+            except ImportError:
+                raise ImportError(
+                    "The 'imageio' and 'imageio-ffmpeg' packages are required to process video messages. "
+                    "Please install them using: pip install imageio imageio-ffmpeg"
+                )
 
             base64Frames: List[str] = []
             frame_count = 0

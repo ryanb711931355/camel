@@ -56,7 +56,7 @@ class StripeToolkit(BaseToolkit):
                 case of failure. (default: :obj:`3`)
         """
         super().__init__(timeout=timeout)
-        import stripe
+        import stripe  # type: ignore
 
         stripe.max_network_retries = retries
         stripe.log = 'info'
@@ -263,7 +263,7 @@ class StripeToolkit(BaseToolkit):
         Returns:
             str: An error message string.
         """
-        from stripe import StripeError
+        from stripe import StripeError  # type: ignore
 
         if isinstance(error, StripeError):
             message = error.user_message or str(error)

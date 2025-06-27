@@ -1701,8 +1701,8 @@ class Workforce(BaseNode):
                 worker_sys_msg,
                 model=model,
                 tools=function_list,
-                pause_event=self._pause_event,
-            )  # type: ignore[arg-type]
+                pause_event=self._pause_event if self._pause_event is not None else None,
+            )
 
     async def _get_returned_task(self) -> Optional[Task]:
         r"""Get the task that's published by this node and just get returned

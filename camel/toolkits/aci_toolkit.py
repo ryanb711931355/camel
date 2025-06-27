@@ -16,9 +16,12 @@ import os
 from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 if TYPE_CHECKING:
-    from aci.types.app_configurations import AppConfiguration
-    from aci.types.apps import AppBasic, AppDetails
-    from aci.types.linked_accounts import LinkedAccount
+    try:
+        from aci.types.app_configurations import AppConfiguration
+        from aci.types.apps import AppBasic, AppDetails
+        from aci.types.linked_accounts import LinkedAccount
+    except ImportError:
+        pass
 
 from camel.logger import get_logger
 from camel.toolkits import FunctionTool
@@ -57,7 +60,10 @@ class ACIToolkit(BaseToolkit):
             timeout (Optional[float]): Request timeout.
                 (default: :obj:`None`)
         """
-        from aci import ACI
+        try:
+            from aci import ACI
+        except ImportError:
+            ACI = None
 
         super().__init__(timeout)
 
@@ -150,7 +156,10 @@ class ACIToolkit(BaseToolkit):
         Returns:
             Union[Dict, str]: Configuration result or error message.
         """
-        from aci.types.enums import SecurityScheme
+        try:
+            from aci.types.enums import SecurityScheme
+        except ImportError:
+            SecurityScheme = None
 
         try:
             app_details = self.get_app_details(app_name)
@@ -436,21 +445,25 @@ class ACIToolkit(BaseToolkit):
             FunctionTool(self.search_function),
         ]
 
-        for function in _all_function:
-            schema = self.client.functions.get_definition(
-                function['function']['name']
-            )
+        if self.client is not None:
+            for function in _all_function:
+                try:
+                    schema = self.client.functions.get_definition(
+                        function['function']['name']
+                    )
 
-            def dummy_func(*, schema=schema, **kwargs):
-                return self.execute_function(
-                    function_name=schema['function']['name'],
-                    function_arguments=kwargs,
-                    linked_account_owner_id=self.linked_account_owner_id,
-                )
+                    def dummy_func(*, schema=schema, **kwargs):
+                        return self.execute_function(
+                            function_name=schema['function']['name'],
+                            function_arguments=kwargs,
+                            linked_account_owner_id=self.linked_account_owner_id,
+                        )
 
-            tool = FunctionTool(
-                func=dummy_func,
-                openai_tool_schema=schema,
-            )
-            tools.append(tool)
+                    tool = FunctionTool(
+                        func=dummy_func,
+                        openai_tool_schema=schema,
+                    )
+                    tools.append(tool)
+                except Exception:
+                    pass
         return tools

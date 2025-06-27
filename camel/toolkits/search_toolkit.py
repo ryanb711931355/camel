@@ -101,7 +101,7 @@ class SearchToolkit(BaseToolkit):
                 returns an error message.
         """
         try:
-            from linkup import LinkupClient
+            from linkup import LinkupClient  # type: ignore[import-untyped]
 
             # Initialize the Linkup client with the API key
             LINKUP_API_KEY = os.getenv("LINKUP_API_KEY")

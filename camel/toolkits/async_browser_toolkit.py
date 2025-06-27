@@ -148,7 +148,7 @@ class AsyncBaseBrowser:
         """
         from playwright.async_api import (
             async_playwright,
-        )
+        )  # type: ignore[import-not-found]
 
         self.history: list[Any] = []
         self.headless = headless

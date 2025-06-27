@@ -271,7 +271,7 @@ class ChromaStorage(BaseVectorStorage):
 
     def _get_connection_client(self) -> "ClientAPI":
         r"""Get ChromaDB client based on client type and user settings."""
-        import chromadb
+        import chromadb  # type: ignore[import-not-found]
 
         # Map client types to handler methods
         client_handlers: Dict[

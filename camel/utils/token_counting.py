@@ -303,7 +303,7 @@ class AnthropicTokenCounter(BaseTokenCounter):
         Returns:
             int: Number of tokens in the messages.
         """
-        from anthropic.types import MessageParam
+        from anthropic.types import MessageParam  # type: ignore[import-not-found]
 
         return self.client.messages.count_tokens(
             messages=[
@@ -431,7 +431,7 @@ class MistralTokenCounter(BaseTokenCounter):
             model_type (ModelType): Model type for which tokens will be
                 counted.
         """
-        from mistral_common.tokens.tokenizers.mistral import (  # type:ignore[import-not-found]
+        from mistral_common.tokens.tokenizers.mistral import (  # type: ignore[import-not-found]
             MistralTokenizer,
         )
 

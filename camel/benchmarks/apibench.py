@@ -18,9 +18,15 @@ import random
 from pathlib import Path
 from typing import Any, Dict, Literal, Optional
 
-import tree_sitter_python as tspython
+try:
+    import tree_sitter_python as tspython
+    from tree_sitter import Language, Parser
+except ImportError:
+    tspython = None
+    Language = None
+    Parser = None
+
 from tqdm import tqdm
-from tree_sitter import Language, Parser
 
 from camel.agents import ChatAgent
 from camel.benchmarks.base import BaseBenchmark
