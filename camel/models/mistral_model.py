@@ -136,6 +136,7 @@ class MistralModel(BaseModelBackend):
         tool_calls = None
         if (
             response.choices
+            and len(response.choices) > 0
             and response.choices[0].message
             and response.choices[0].message.tool_calls is not None
         ):
@@ -150,6 +151,9 @@ class MistralModel(BaseModelBackend):
                 )
                 for tool_call in response.choices[0].message.tool_calls
             ]
+
+        if not response.choices or len(response.choices) == 0:
+            raise ValueError("Response choices is empty")
 
         obj = ChatCompletion.construct(
             id=response.id,
@@ -189,7 +193,7 @@ class MistralModel(BaseModelBackend):
             UserMessage,
         )
 
-        new_messages = []
+        new_messages: List["Messages"] = []
         for msg in messages:
             tool_id = uuid.uuid4().hex[:9]
             tool_call_id = msg.get("tool_call_id") or uuid.uuid4().hex[:9]
@@ -237,7 +241,7 @@ class MistralModel(BaseModelBackend):
             else:
                 raise ValueError(f"Unsupported message role: {role}")
 
-        return new_messages  # type: ignore[return-value]
+        return new_messages
 
     @property
     def token_counter(self) -> BaseTokenCounter:
@@ -315,9 +319,9 @@ class MistralModel(BaseModelBackend):
                 prompt=" ".join(
                     [message.get("content") for message in messages]  # type: ignore[misc]
                 ),
-                prompt_tokens=openai_response.usage.prompt_tokens,  # type: ignore[union-attr]
-                completion=openai_response.choices[0].message.content,
-                completion_tokens=openai_response.usage.completion_tokens,  # type: ignore[union-attr]
+                prompt_tokens=openai_response.usage.prompt_tokens if openai_response.usage else 0,  # type: ignore[union-attr]
+                completion=openai_response.choices[0].message.content if openai_response.choices else "",
+                completion_tokens=openai_response.usage.completion_tokens if openai_response.usage else 0,  # type: ignore[union-attr]
                 model=self.model_type,
             )
             record(llm_event)
@@ -390,9 +394,9 @@ class MistralModel(BaseModelBackend):
                 prompt=" ".join(
                     [message.get("content") for message in messages]  # type: ignore[misc]
                 ),
-                prompt_tokens=openai_response.usage.prompt_tokens,  # type: ignore[union-attr]
-                completion=openai_response.choices[0].message.content,
-                completion_tokens=openai_response.usage.completion_tokens,  # type: ignore[union-attr]
+                prompt_tokens=openai_response.usage.prompt_tokens if openai_response.usage else 0,  # type: ignore[union-attr]
+                completion=openai_response.choices[0].message.content if openai_response.choices else "",
+                completion_tokens=openai_response.usage.completion_tokens if openai_response.usage else 0,  # type: ignore[union-attr]
                 model=self.model_type,
             )
             record(llm_event)

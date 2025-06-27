@@ -146,9 +146,15 @@ class AsyncBaseBrowser:
         Returns:
             None
         """
-        from playwright.async_api import (
-            async_playwright,
-        )
+        try:
+            from playwright.async_api import (
+                async_playwright,
+            )
+        except ImportError:
+            raise ImportError(
+                "The 'playwright' package is required for AsyncBaseBrowser. "
+                "Please install it using 'pip install playwright' and then run 'playwright install'."
+            )
 
         self.history: list[Any] = []
         self.headless = headless

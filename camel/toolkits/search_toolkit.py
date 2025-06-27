@@ -12,13 +12,17 @@
 # limitations under the License.
 # ========= Copyright 2023-2024 @ CAMEL-AI.org. All Rights Reserved. =========
 import os
-from typing import Any, Dict, List, Literal, Optional, TypeAlias, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, TypeAlias, Union, cast
 
 import requests
 
 from camel.toolkits.base import BaseToolkit
 from camel.toolkits.function_tool import FunctionTool
 from camel.utils import MCPServer, api_keys_required, dependencies_required
+
+if TYPE_CHECKING:
+    from linkup import Client as LinkupClient
+    from tavily import TavilyClient
 
 
 @MCPServer()

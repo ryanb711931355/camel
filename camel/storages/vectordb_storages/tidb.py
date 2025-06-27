@@ -27,8 +27,11 @@ from camel.storages.vectordb_storages import (
 )
 from camel.utils import dependencies_required
 
-if TYPE_CHECKING:
+try:
     from pytidb import Table, TiDBClient
+except ImportError:
+    Table = None  # type: ignore
+    TiDBClient = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 

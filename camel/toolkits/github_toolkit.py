@@ -52,8 +52,8 @@ class GithubToolkit(BaseToolkit):
                 `get_github_access_token` method.
         """
         super().__init__(timeout=timeout)
+        from github import Github
         from github.Auth import Token
-        from github.MainClass import Github
 
         if access_token is None:
             access_token = self.get_github_access_token()
@@ -112,7 +112,7 @@ class GithubToolkit(BaseToolkit):
         """
         repo = self.github.get_repo(repo_name)
         default_branch = repo.get_branch(repo.default_branch)
-        from github.GithubException import GithubException
+        from github import GithubException
 
         try:
             repo.create_git_ref(
@@ -130,7 +130,7 @@ class GithubToolkit(BaseToolkit):
 
         file = repo.get_contents(file_path)
 
-        from github.ContentFile import ContentFile
+        from github import ContentFile
 
         if isinstance(file, ContentFile):
             repo.update_file(
@@ -291,7 +291,7 @@ class GithubToolkit(BaseToolkit):
             List[str]: A list of file paths within the specified directory
                 structure.
         """
-        from github.ContentFile import ContentFile
+        from github import ContentFile
 
         repo = self.github.get_repo(repo_name)
 
@@ -324,7 +324,7 @@ class GithubToolkit(BaseToolkit):
         Returns:
             str: The decoded content of the file.
         """
-        from github.ContentFile import ContentFile
+        from github import ContentFile
 
         repo = self.github.get_repo(repo_name)
 

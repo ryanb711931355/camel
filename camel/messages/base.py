@@ -467,7 +467,13 @@ class BaseMessage:
                 )
 
         if self.video_bytes:
-            import imageio.v3 as iio
+            try:
+                import imageio.v3 as iio
+            except ImportError:
+                raise ImportError(
+                    "imageio is required for video processing. "
+                    "Please install it with: pip install imageio[pyav]"
+                )
             import numpy as np
 
             base64Frames: List[str] = []

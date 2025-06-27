@@ -120,6 +120,9 @@ class VectorRetriever(BaseRetriever):
                 )
                 or []
             )
+            # Ensure content is reset to beginning if it's a seekable stream
+            if hasattr(content, 'seek'):
+                content.seek(0)
         elif isinstance(content, str):
             # Check if the content is URL
             parsed_url = urlparse(content)

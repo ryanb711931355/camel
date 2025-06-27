@@ -197,8 +197,10 @@ class AnthropicModel(OpenAICompatibleModel):
         whitespace from message content before sending to the Anthropic API.
         """
         import functools
+        from typing import TYPE_CHECKING
 
-        from anthropic.types import MessageParam
+        if TYPE_CHECKING:
+            from anthropic.types import MessageParam
 
         from camel.utils import AnthropicTokenCounter
 

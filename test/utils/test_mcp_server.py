@@ -16,7 +16,7 @@ import sys
 from typing import Literal
 
 import pytest
-from mcp.server import FastMCP
+from mcp.server.fastmcp import FastMCP
 
 from camel.toolkits.mcp_toolkit import MCPClient
 from camel.utils import MCPServer
@@ -64,7 +64,7 @@ class TextProcessorForMCP:
 
 def test_tool_schema():
     processor = TextProcessorForMCP()
-    tools = processor.mcp._tool_manager.list_tools()
+    tools = processor.mcp._tool_manager.list_tools()  # type: ignore[attr-defined]
     tool_functions = {tool.name: tool for tool in tools}
 
     assert "reverse_text" in tool_functions

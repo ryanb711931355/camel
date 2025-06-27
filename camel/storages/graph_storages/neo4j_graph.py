@@ -16,6 +16,9 @@ import os
 from hashlib import md5
 from typing import Any, Dict, List, Optional
 
+from neo4j import GraphDatabase
+from neo4j.exceptions import ServiceUnavailable, AuthError
+
 from camel.storages.graph_storages import BaseGraphStorage, GraphElement
 from camel.utils import dependencies_required
 

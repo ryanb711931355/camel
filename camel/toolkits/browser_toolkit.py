@@ -76,7 +76,7 @@ if TYPE_CHECKING:
         FloatRect,
         Page,
         Playwright,
-    )
+    )  # type: ignore[import-not-found]
 
     from camel.agents import ChatAgent
 

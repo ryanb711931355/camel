@@ -22,7 +22,7 @@ from stripe import (
     Customer,
     PaymentIntent,
     Refund,
-)
+)  # type: ignore
 
 from camel.toolkits.stripe_toolkit import StripeToolkit
 

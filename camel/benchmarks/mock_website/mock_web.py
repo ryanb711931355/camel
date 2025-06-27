@@ -87,7 +87,7 @@ def download_website_assets(project_name: str):
             local_dir=local_dir_root,
             local_dir_use_symlinks=False,
             # Use False for Windows compatibility
-        )
+        )  # type: ignore[call-overload]
         log.info(f"Snapshot downloaded to: {snapshot_path}")
 
         # The downloaded content for the project is in a subdirectory

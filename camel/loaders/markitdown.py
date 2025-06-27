@@ -77,7 +77,13 @@ class MarkItDownLoader:
             llm_model (Optional[str]): Optional model name for the LLM.
                 (default: :obj:`None`)
         """
-        from markitdown import MarkItDown
+        try:
+            from markitdown import MarkItDown
+        except ImportError:
+            raise ImportError(
+                "The 'markitdown' package is required for this loader. "
+                "Please install it using: pip install markitdown"
+            )
 
         try:
             self.converter = MarkItDown(

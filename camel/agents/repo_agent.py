@@ -17,7 +17,10 @@ from string import Template
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
-    from github.MainClass import Github
+    try:
+        from github.MainClass import Github
+    except ImportError:
+        Github = None
 from pydantic import BaseModel
 
 from camel.agents import ChatAgent

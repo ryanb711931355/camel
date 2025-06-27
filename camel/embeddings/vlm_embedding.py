@@ -100,6 +100,20 @@ class VisionLanguageEmbedding(BaseEmbedding[Union[str, Image.Image]]):
         tokenizer_kwargs: Optional[dict] = kwargs.get('tokenizer_kwargs', {})
         model_kwargs: Optional[dict] = kwargs.get('model_kwargs', {})
 
+        # Filter kwargs to only include valid keys to avoid type errors
+        valid_processor_kwargs = self.processor._get_signature_keys()
+        valid_model_kwargs = self.model._get_signature_keys()
+
+        filtered_image_processor_kwargs = {
+            k: v for k, v in image_processor_kwargs.items() if k in valid_processor_kwargs
+        }
+        filtered_tokenizer_kwargs = {
+            k: v for k, v in tokenizer_kwargs.items() if k in valid_processor_kwargs
+        }
+        filtered_model_kwargs = {
+            k: v for k, v in model_kwargs.items() if k in valid_model_kwargs
+        }
+
         result_list = []
         for obj in objs:
             if (
@@ -110,11 +124,11 @@ class VisionLanguageEmbedding(BaseEmbedding[Union[str, Image.Image]]):
                     images=obj,
                     return_tensors="pt",
                     padding=True,
-                    **image_processor_kwargs,
+                    **filtered_image_processor_kwargs,
                 )
                 image_feature = (
                     self.model.get_image_features(
-                        **image_input, **model_kwargs
+                        **image_input, **filtered_model_kwargs
                     )
                     .squeeze(dim=0)
                     .tolist()
@@ -125,10 +139,10 @@ class VisionLanguageEmbedding(BaseEmbedding[Union[str, Image.Image]]):
                     text=obj,
                     return_tensors="pt",
                     padding=True,
-                    **tokenizer_kwargs,
+                    **filtered_tokenizer_kwargs,
                 )
                 text_feature = (
-                    self.model.get_text_features(**text_input, **model_kwargs)
+                    self.model.get_text_features(**text_input, **filtered_model_kwargs)
                     .squeeze(dim=0)
                     .tolist()
                 )

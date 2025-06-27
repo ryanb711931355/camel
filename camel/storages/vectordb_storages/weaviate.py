@@ -229,7 +229,13 @@ class WeaviateStorage(BaseVectorStorage):
 
     def _get_connection_client(self) -> "WeaviateClient":
         r"""Get Weaviate client based on connection type and user settings."""
-        import weaviate
+        try:
+            import weaviate
+        except ImportError:
+            raise ImportError(
+                "The 'weaviate' package is required for WeaviateStorage. "
+                "Please install it with: pip install weaviate-client"
+            )
 
         # Map connection types to handler methods
         connection_handlers: Dict[ConnectionType, Any] = {
@@ -532,8 +538,8 @@ class WeaviateStorage(BaseVectorStorage):
             return
 
         try:
-            collection = self._client.collections.get(self.collection_name)
             from weaviate.classes.query import Filter
+            collection = self._client.collections.get(self.collection_name)
 
             collection.data.delete_many(
                 where=Filter.by_id().contains_any(ids), **kwargs
@@ -628,7 +634,13 @@ class WeaviateStorage(BaseVectorStorage):
             List[VectorDBQueryResult]: A list of vectors retrieved from the
                 storage based on similarity to the query vector.
         """
-        from weaviate.classes.query import MetadataQuery
+        try:
+            from weaviate.classes.query import MetadataQuery
+        except ImportError:
+            raise ImportError(
+                "The 'weaviate' package is required for WeaviateStorage. "
+                "Please install it with: pip install weaviate-client"
+            )
 
         try:
             collection = self._client.collections.get(self.collection_name)

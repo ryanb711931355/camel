@@ -18,9 +18,15 @@ import random
 from pathlib import Path
 from typing import Any, Dict, Literal, Optional
 
-import tree_sitter_python as tspython
+try:
+    import tree_sitter_python as tspython
+    from tree_sitter import Language, Parser
+except ImportError:
+    tspython = None
+    Language = None
+    Parser = None
+
 from tqdm import tqdm
-from tree_sitter import Language, Parser
 
 from camel.agents import ChatAgent
 from camel.benchmarks.base import BaseBenchmark
@@ -376,6 +382,8 @@ def get_all_sub_trees(root_node):
 
 # Parse the program into AST trees
 def ast_parse(candidate):
+    if tspython is None or Language is None or Parser is None:
+        raise ImportError("tree_sitter and tree_sitter_python are required for ast_parse")
     PY_LANGUAGE = Language(tspython.language())
     parser = Parser(PY_LANGUAGE)
 

@@ -15,10 +15,18 @@ import logging
 import os
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
-from slack_sdk.oauth.installation_store.async_installation_store import (
-    AsyncInstallationStore,
-)
-from starlette import requests, responses
+try:
+    from slack_sdk.oauth.installation_store.async_installation_store import (
+        AsyncInstallationStore,
+    )
+except ImportError:
+    AsyncInstallationStore = Any  # type: ignore
+
+try:
+    from starlette import requests, responses
+except ImportError:
+    requests = Any  # type: ignore
+    responses = Any  # type: ignore
 
 from camel.bots.slack.models import (
     SlackAppMentionEventBody,
@@ -29,9 +37,14 @@ from camel.bots.slack.models import (
 from camel.utils import dependencies_required
 
 if TYPE_CHECKING:
-    from slack_bolt.context.async_context import AsyncBoltContext
-    from slack_bolt.context.say.async_say import AsyncSay
-    from slack_sdk.web.async_client import AsyncWebClient
+    try:
+        from slack_bolt.context.async_context import AsyncBoltContext
+        from slack_bolt.context.say.async_say import AsyncSay
+        from slack_sdk.web.async_client import AsyncWebClient
+    except ImportError:
+        AsyncBoltContext = Any  # type: ignore
+        AsyncSay = Any  # type: ignore
+        AsyncWebClient = Any  # type: ignore
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -83,11 +96,17 @@ class SlackApp:
             installation_store (Optional[AsyncInstallationStore]): An optional
                 installation store for OAuth installations.
         """
-        from slack_bolt.adapter.starlette.async_handler import (
-            AsyncSlackRequestHandler,
-        )
-        from slack_bolt.app.async_app import AsyncApp
-        from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
+        try:
+            from slack_bolt.adapter.starlette.async_handler import (
+                AsyncSlackRequestHandler,
+            )
+            from slack_bolt.app.async_app import AsyncApp
+            from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
+        except ImportError:
+            raise ImportError(
+                "slack_bolt package is required for SlackApp. "
+                "Please install it with `pip install slack-bolt`."
+            )
 
         self.token: Optional[str] = token or os.getenv("SLACK_TOKEN")
         self.scopes: Optional[str] = scopes or os.getenv("SLACK_SCOPES")

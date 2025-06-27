@@ -14,7 +14,11 @@
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from mcp.server.fastmcp import Context
+
+try:
+    from mcp.server.fastmcp import Context
+except ImportError:
+    Context = None
 
 from camel.messages import BaseMessage
 from camel.responses import ChatAgentResponse

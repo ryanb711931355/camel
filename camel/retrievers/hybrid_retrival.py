@@ -162,8 +162,8 @@ class HybridRetriever(BaseRetriever):
         bm25_retriever_top_k: int = 50,
         return_detailed_info: bool = False,
     ) -> Union[
-        dict[str, Sequence[Collection[str]]],
-        dict[str, Sequence[Union[str, float]]],
+        dict[str, Sequence[str]],
+        dict[str, Sequence[Dict[str, Any]]],
     ]:
         r"""Executes a hybrid retrieval query using both vector and BM25
         retrievers.
@@ -182,8 +182,8 @@ class HybridRetriever(BaseRetriever):
 
         Returns:
             Union[
-                dict[str, Sequence[Collection[str]]],
-                dict[str, Sequence[Union[str, float]]]
+                dict[str, Sequence[str]],
+                dict[str, Sequence[Dict[str, Any]]]
             ]: By default, returns only the text information. If
                 `return_detailed_info` is `True`, return detailed information
                 including rrf scores.
@@ -226,12 +226,15 @@ class HybridRetriever(BaseRetriever):
             rank_smoothing_factor,
         )
 
-        retrieved_info = {
+        retrieved_info: Union[
+            dict[str, Sequence[str]],
+            dict[str, Sequence[Dict[str, Any]]],
+        ] = {
             "Original Query": query,
             "Retrieved Context": (
                 all_retrieved_info
                 if return_detailed_info
-                else [item['text'] for item in all_retrieved_info]  # type: ignore[misc]
+                else [item['text'] for item in all_retrieved_info]
             ),
         }
         return retrieved_info

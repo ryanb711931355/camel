@@ -15,7 +15,9 @@ import os
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, List, Optional
 
-import discord
+if TYPE_CHECKING:
+    import discord
+
 import httpx
 from fastapi import FastAPI
 

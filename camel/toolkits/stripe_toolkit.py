@@ -56,7 +56,13 @@ class StripeToolkit(BaseToolkit):
                 case of failure. (default: :obj:`3`)
         """
         super().__init__(timeout=timeout)
-        import stripe
+        try:
+            import stripe
+        except ImportError:
+            raise ImportError(
+                "The 'stripe' package is required for this toolkit. "
+                "Please install it with: pip install stripe"
+            )
 
         stripe.max_network_retries = retries
         stripe.log = 'info'
@@ -80,7 +86,13 @@ class StripeToolkit(BaseToolkit):
         Returns:
             str: The customer data as a str.
         """
-        import stripe
+        try:
+            import stripe
+        except ImportError:
+            raise ImportError(
+                "The 'stripe' package is required for this toolkit. "
+                "Please install it with: pip install stripe"
+            )
 
         try:
             self.logger.info(f"Retrieving customer with ID: {customer_id}")
@@ -102,7 +114,13 @@ class StripeToolkit(BaseToolkit):
             str: An output str if successful, or an error message string if
                 failed.
         """
-        import stripe
+        try:
+            import stripe
+        except ImportError:
+            raise ImportError(
+                "The 'stripe' package is required for this toolkit. "
+                "Please install it with: pip install stripe"
+            )
 
         try:
             self.logger.info(f"Listing customers with limit={limit}")
@@ -123,7 +141,13 @@ class StripeToolkit(BaseToolkit):
             str: A str containing the account balance if successful, or an
                 error message string if failed.
         """
-        import stripe
+        try:
+            import stripe
+        except ImportError:
+            raise ImportError(
+                "The 'stripe' package is required for this toolkit. "
+                "Please install it with: pip install stripe"
+            )
 
         try:
             self.logger.info("Retrieving account balance.")
@@ -146,7 +170,13 @@ class StripeToolkit(BaseToolkit):
             str: A list of balance transaction data if successful, or an error
                 message string if failed.
         """
-        import stripe
+        try:
+            import stripe
+        except ImportError:
+            raise ImportError(
+                "The 'stripe' package is required for this toolkit. "
+                "Please install it with: pip install stripe"
+            )
 
         try:
             self.logger.info(
@@ -174,7 +204,13 @@ class StripeToolkit(BaseToolkit):
             str:The payment data as a str if successful, or an error message
                 string if failed.
         """
-        import stripe
+        try:
+            import stripe
+        except ImportError:
+            raise ImportError(
+                "The 'stripe' package is required for this toolkit. "
+                "Please install it with: pip install stripe"
+            )
 
         try:
             self.logger.info(f"Retrieving payment with ID: {payment_id}")
@@ -195,7 +231,13 @@ class StripeToolkit(BaseToolkit):
             str: A list of payment data if successful, or an error message
                 string if failed.
         """
-        import stripe
+        try:
+            import stripe
+        except ImportError:
+            raise ImportError(
+                "The 'stripe' package is required for this toolkit. "
+                "Please install it with: pip install stripe"
+            )
 
         try:
             self.logger.info(f"Listing payments with limit={limit}")
@@ -219,7 +261,13 @@ class StripeToolkit(BaseToolkit):
             str: The refund data as a str if successful, or an error message
                 string if failed.
         """
-        import stripe
+        try:
+            import stripe
+        except ImportError:
+            raise ImportError(
+                "The 'stripe' package is required for this toolkit. "
+                "Please install it with: pip install stripe"
+            )
 
         try:
             self.logger.info(f"Retrieving refund with ID: {refund_id}")
@@ -240,7 +288,13 @@ class StripeToolkit(BaseToolkit):
             str: A list of refund data as a str if successful, or an error
                 message string if failed.
         """
-        import stripe
+        try:
+            import stripe
+        except ImportError:
+            raise ImportError(
+                "The 'stripe' package is required for this toolkit. "
+                "Please install it with: pip install stripe"
+            )
 
         try:
             self.logger.info(f"Listing refunds with limit={limit}")
@@ -263,7 +317,10 @@ class StripeToolkit(BaseToolkit):
         Returns:
             str: An error message string.
         """
-        from stripe import StripeError
+        try:
+            from stripe import StripeError
+        except ImportError:
+            StripeError = Exception
 
         if isinstance(error, StripeError):
             message = error.user_message or str(error)
