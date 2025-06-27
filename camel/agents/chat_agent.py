@@ -1791,8 +1791,17 @@ class ChatAgent(BaseAgent):
 
         tool_call_requests: Optional[List[ToolCallRequest]] = None
         if tool_calls := response.choices[0].message.tool_calls:
+            from openai.types.chat import (
+                ChatCompletionMessageFunctionToolCall,
+            )
+
             tool_call_requests = []
             for tool_call in tool_calls:
+                # Only function tool calls carry a `function` attribute
+                if not isinstance(
+                    tool_call, ChatCompletionMessageFunctionToolCall
+                ):
+                    continue
                 tool_name = tool_call.function.name
                 tool_call_id = tool_call.id
                 args = json.loads(tool_call.function.arguments)
@@ -2239,7 +2248,7 @@ class ChatAgent(BaseAgent):
         Returns:
             FastMCP: An MCP server instance that can be run.
         """
-        from mcp.server.fastmcp import FastMCP
+        from mcp.server.fastmcp import FastMCP  # type: ignore[import-not-found]
 
         # Combine dependencies
         all_dependencies = ["camel-ai[all]"]

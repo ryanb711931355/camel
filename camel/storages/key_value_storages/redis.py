@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from camel.storages.key_value_storages import BaseKeyValueStorage
 
 if TYPE_CHECKING:
-    from redis.asyncio import Redis
+    from redis.asyncio import Redis  # type: ignore[import-not-found]
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class RedisStorage(BaseKeyValueStorage):
             ImportError: If the `redis.asyncio` module is not installed.
         """
         try:
-            import redis.asyncio as aredis
+            import redis.asyncio as aredis  # type: ignore[import-not-found]
         except ImportError as exc:
             logger.error(
                 "Please install `redis` first. You can install it by "

@@ -198,7 +198,9 @@ class AnthropicModel(OpenAICompatibleModel):
         """
         import functools
 
-        from anthropic.types import MessageParam
+        from anthropic.types import (  # type: ignore[import-not-found]
+            MessageParam,
+        )
 
         from camel.utils import AnthropicTokenCounter
 

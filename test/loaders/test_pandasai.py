@@ -17,7 +17,7 @@ import tempfile
 
 import pandas as pd  # type: ignore[import-untyped]
 import pytest
-from pandasai.llm import OpenAI  # type: ignore[import-untyped]
+from pandasai.llm import OpenAI  # type: ignore[import-untyped,import-not-found]
 
 from camel.loaders import PandasReader
 

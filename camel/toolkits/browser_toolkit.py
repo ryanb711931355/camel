@@ -70,7 +70,7 @@ from .browser_toolkit_commons import (
 )
 
 if TYPE_CHECKING:
-    from playwright.sync_api import (
+    from playwright.sync_api import (  # type: ignore[import-not-found]
         Browser,
         BrowserContext,
         FloatRect,

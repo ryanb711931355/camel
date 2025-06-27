@@ -15,7 +15,9 @@ import os
 from typing import TYPE_CHECKING, List, Optional
 
 if TYPE_CHECKING:
-    from apify_client.clients import DatasetClient
+    from apify_client.clients import (  # type: ignore[import-not-found]
+        DatasetClient,
+    )
 
 from camel.utils import api_keys_required
 
@@ -36,7 +38,7 @@ class Apify:
         self,
         api_key: Optional[str] = None,
     ) -> None:
-        from apify_client import ApifyClient
+        from apify_client import ApifyClient  # type: ignore[import-not-found]
 
         self._api_key = api_key or os.environ.get("APIFY_API_KEY")
         self.client = ApifyClient(token=self._api_key)

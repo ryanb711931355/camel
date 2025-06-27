@@ -66,7 +66,9 @@ class MistralConfig(BaseConfig):
     @classmethod
     def fields_type_checking(cls, response_format):
         if response_format and not isinstance(response_format, dict):
-            from mistralai.models import ResponseFormat
+            from mistralai.models import (  # type: ignore[import-not-found]
+                ResponseFormat,
+            )
 
             if not isinstance(response_format, ResponseFormat):
                 raise ValueError(

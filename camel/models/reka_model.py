@@ -39,7 +39,10 @@ else:
     from camel.utils import observe
 
 if TYPE_CHECKING:
-    from reka.types import ChatMessage, ChatResponse
+    from reka.types import (  # type: ignore[import-not-found]
+        ChatMessage,
+        ChatResponse,
+    )
 
 try:
     import os
@@ -92,7 +95,10 @@ class RekaModel(BaseModelBackend):
         timeout: Optional[float] = None,
         **kwargs: Any,
     ) -> None:
-        from reka.client import AsyncReka, Reka
+        from reka.client import (  # type: ignore[import-not-found]
+            AsyncReka,
+            Reka,
+        )
 
         if model_config_dict is None:
             model_config_dict = RekaConfig().as_dict()

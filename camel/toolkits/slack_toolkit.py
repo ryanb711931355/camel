@@ -24,7 +24,7 @@ from camel.utils import MCPServer
 if TYPE_CHECKING:
     from ssl import SSLContext
 
-    from slack_sdk import WebClient
+    from slack_sdk import WebClient  # type: ignore[import-not-found]
 
 from camel.logger import get_logger
 from camel.toolkits import FunctionTool
@@ -114,7 +114,7 @@ class SlackToolkit(BaseToolkit):
             SlackApiError: If there is an error during get slack channel
                 information.
         """
-        from slack_sdk.errors import SlackApiError
+        from slack_sdk.errors import SlackApiError  # type: ignore[import-not-found]
 
         try:
             slack_client = self._login_slack()

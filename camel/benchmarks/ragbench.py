@@ -104,7 +104,7 @@ def auroc(trues: Sequence[bool], preds: Sequence[float]) -> float:
     Returns:
         float: AUROC score.
     """
-    from sklearn.metrics import roc_auc_score  # type: ignore[import-untyped]
+    from sklearn.metrics import roc_auc_score  # type: ignore[import-not-found, import-untyped]
 
     eval_idx = ~np.isnan(preds)
     if not np.any(eval_idx):

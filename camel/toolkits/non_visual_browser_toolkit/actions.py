@@ -15,7 +15,9 @@ import asyncio
 from typing import TYPE_CHECKING, Any, Dict
 
 if TYPE_CHECKING:
-    from playwright.async_api import Page
+    from playwright.async_api import (  # type: ignore[import-not-found]
+        Page,
+    )
 
 
 class ActionExecutor:

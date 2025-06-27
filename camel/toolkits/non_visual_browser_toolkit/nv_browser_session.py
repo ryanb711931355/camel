@@ -23,7 +23,7 @@ from .actions import ActionExecutor
 from .snapshot import PageSnapshot
 
 if TYPE_CHECKING:
-    from playwright.async_api import (
+    from playwright.async_api import (  # type: ignore[import-not-found]
         Browser,
         BrowserContext,
         Page,

@@ -146,7 +146,7 @@ class AsyncBaseBrowser:
         Returns:
             None
         """
-        from playwright.async_api import (
+        from playwright.async_api import (  # type: ignore[import-not-found]
             async_playwright,
         )
 

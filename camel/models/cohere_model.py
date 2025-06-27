@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from cohere.types import ChatMessageV2, ChatResponse
+    from cohere.types import ChatMessageV2, ChatResponse  # type: ignore[import-not-found]
 
 from camel.configs import COHERE_API_PARAMS, CohereConfig
 from camel.messages import OpenAIMessage
@@ -189,8 +189,8 @@ class CohereModel(BaseModelBackend):
     def _to_cohere_chatmessage(
         self, messages: List[OpenAIMessage]
     ) -> List["ChatMessageV2"]:
-        from cohere.types import ToolCallV2Function
-        from cohere.types.chat_message_v2 import (
+        from cohere.types import ToolCallV2Function  # type: ignore[import-not-found]
+        from cohere.types.chat_message_v2 import (  # type: ignore[import-not-found]
             AssistantChatMessageV2,
             SystemChatMessageV2,
             ToolCallV2,
@@ -326,7 +326,7 @@ class CohereModel(BaseModelBackend):
                 tags=["CAMEL-AI", str(self.model_type)],
             )
 
-        from cohere.core.api_error import ApiError
+        from cohere.core.api_error import ApiError  # type: ignore[import-not-found]
 
         request_config = self._prepare_request(
             messages, response_format, tools

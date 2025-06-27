@@ -16,7 +16,7 @@ import sys
 from typing import Literal
 
 import pytest
-from mcp.server import FastMCP
+from mcp.server.fastmcp import FastMCP  # type: ignore[import-not-found]
 
 from camel.toolkits.mcp_toolkit import MCPClient
 from camel.utils import MCPServer

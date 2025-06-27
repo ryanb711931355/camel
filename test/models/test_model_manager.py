@@ -56,7 +56,7 @@ def test_model_manager(
         if TYPE_CHECKING:
             assert type(msg) is ChatCompletionSystemMessageParam
         messages.append(msg)
-    model_manager = ModelManager(models, scheduling_strategy=strategy)
+    model_manager = ModelManager(models, scheduling_strategy=strategy)  # type: ignore[arg-type]
 
     assert isinstance(model_manager.models, list)
     assert len(model_manager.models) == models_number

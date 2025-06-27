@@ -114,9 +114,13 @@ class VectorRetriever(BaseRetriever):
         if isinstance(content, Element):
             elements = [content]
         elif isinstance(content, IOBase):
+            from typing import cast
+
             elements = (
                 self.uio.parse_bytes(
-                    file=content, metadata_filename=metadata_filename, **kwargs
+                    file=cast(IO[bytes], content),
+                    metadata_filename=metadata_filename,
+                    **kwargs,
                 )
                 or []
             )

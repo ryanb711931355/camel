@@ -27,7 +27,7 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from weaviate import WeaviateClient
+    from weaviate import WeaviateClient  # type: ignore[import-not-found]
 
 from camel.logger import get_logger
 from camel.storages.vectordb_storages import (
@@ -404,7 +404,7 @@ class WeaviateStorage(BaseVectorStorage):
 
     def _get_vector_index_config(self, **kwargs: Any) -> Any:
         r"""Get vector index configuration based on user settings."""
-        import weaviate.classes.config as wvc
+        import weaviate.classes.config as wvc  # type: ignore[import-not-found]
 
         # Map distance metrics - type safety guaranteed by Literal
         distance_metric_mapping: Dict[DistanceMetric, Any] = {
@@ -533,7 +533,9 @@ class WeaviateStorage(BaseVectorStorage):
 
         try:
             collection = self._client.collections.get(self.collection_name)
-            from weaviate.classes.query import Filter
+            from weaviate.classes.query import (  # type: ignore[import-not-found]
+                Filter,
+            )
 
             collection.data.delete_many(
                 where=Filter.by_id().contains_any(ids), **kwargs

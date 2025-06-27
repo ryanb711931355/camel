@@ -94,7 +94,7 @@ class Neo4jGraph(BaseGraphStorage):
         truncate: bool = False,
     ) -> None:
         r"""Create a new Neo4j graph instance."""
-        import neo4j
+        import neo4j  # type: ignore[import-not-found]
 
         url = os.environ.get("NEO4J_URI") or url
         username = os.environ.get("NEO4J_USERNAME") or username
@@ -226,8 +226,10 @@ class Neo4jGraph(BaseGraphStorage):
         Raises:
             ValueError: If the executed Cypher query syntax is invalid.
         """
-        from neo4j import Query
-        from neo4j.exceptions import CypherSyntaxError
+        from neo4j import Query  # type: ignore[import-not-found]
+        from neo4j.exceptions import (  # type: ignore[import-not-found]
+            CypherSyntaxError,
+        )
 
         if params is None:
             params = {}

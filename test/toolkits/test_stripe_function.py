@@ -16,7 +16,7 @@ import os
 from unittest.mock import MagicMock, patch
 
 import pytest
-from stripe import (
+from stripe import (  # type: ignore[import-not-found]
     Balance,
     BalanceTransaction,
     Customer,

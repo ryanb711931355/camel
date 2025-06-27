@@ -15,9 +15,11 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
 
 if TYPE_CHECKING:
-    from chromadb.api import ClientAPI
-    from chromadb.api.models.Collection import Collection
-    from chromadb.api.types import (
+    from chromadb.api import ClientAPI  # type: ignore[import-not-found]
+    from chromadb.api.models.Collection import (  # type: ignore[import-not-found]
+        Collection,
+    )
+    from chromadb.api.types import (  # type: ignore[import-not-found]
         QueryResult,
     )
 
@@ -271,7 +273,7 @@ class ChromaStorage(BaseVectorStorage):
 
     def _get_connection_client(self) -> "ClientAPI":
         r"""Get ChromaDB client based on client type and user settings."""
-        import chromadb
+        import chromadb  # type: ignore[import-not-found]
 
         # Map client types to handler methods
         client_handlers: Dict[

@@ -15,7 +15,7 @@ import os
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, List, Optional
 
-import discord
+import discord  # type: ignore[import-not-found]
 import httpx
 from fastapi import FastAPI
 

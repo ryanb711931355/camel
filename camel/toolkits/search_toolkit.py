@@ -101,7 +101,7 @@ class SearchToolkit(BaseToolkit):
                 returns an error message.
         """
         try:
-            from linkup import LinkupClient
+            from linkup import LinkupClient  # type: ignore[import-not-found]
 
             # Initialize the Linkup client with the API key
             LINKUP_API_KEY = os.getenv("LINKUP_API_KEY")
@@ -520,7 +520,7 @@ class SearchToolkit(BaseToolkit):
                 - 'published_date' (str): Publication date for news topics
                   (if available).
         """
-        from tavily import TavilyClient  # type: ignore[import-untyped]
+        from tavily import TavilyClient  # type: ignore[import-untyped, import-not-found]
 
         Tavily_API_KEY = os.getenv("TAVILY_API_KEY")
         if not Tavily_API_KEY:
