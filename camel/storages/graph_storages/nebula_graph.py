@@ -26,14 +26,17 @@ from camel.utils.commons import dependencies_required
 logger = logging.getLogger(__name__)
 
 
+try:
+    from nebula3.data.ResultSet import ResultSet
+    from nebula3.gclient.net import ConnectionPool, Session
+except ImportError:
+    ResultSet = Any
+    ConnectionPool = Any
+    Session = Any
+
 if TYPE_CHECKING:
-    from nebula3.data.ResultSet import (  # type: ignore[import-untyped]
-        ResultSet,
-    )
-    from nebula3.gclient.net import (  # type: ignore[import-untyped]
-        ConnectionPool,
-        Session,
-    )
+    from nebula3.data.ResultSet import ResultSet
+    from nebula3.gclient.net import ConnectionPool, Session
 
 
 MAX_RETRIES = 5
@@ -41,7 +44,6 @@ RETRY_DELAY = 3
 
 
 class NebulaGraph(BaseGraphStorage):
-    @dependencies_required('nebula3')
     def __init__(
         self, host, username, password, space, port=9669, timeout=10000
     ):
@@ -78,8 +80,14 @@ class NebulaGraph(BaseGraphStorage):
         Raises:
             Exception: If the connection pool initialization fails.
         """
-        from nebula3.Config import Config  # type: ignore[import-untyped]
-        from nebula3.gclient.net import ConnectionPool
+        try:
+            from nebula3.Config import Config
+            from nebula3.gclient.net import ConnectionPool
+        except ImportError:
+            raise ImportError(
+                "The 'nebula3' package is required to use NebulaGraph. "
+                "Install it with `pip install nebula3`."
+            )
 
         config = Config()
         config.max_connection_pool_size = 10
@@ -400,7 +408,7 @@ class NebulaGraph(BaseGraphStorage):
 
         return structured_schema
 
-    def get_schema(self):
+    def get_schema(self) -> str:
         r"""Generates a schema string describing node and relationship
         properties and relationships.
 
@@ -426,7 +434,7 @@ class NebulaGraph(BaseGraphStorage):
 
         return schema
 
-    def get_indexes(self):
+    def get_indexes(self) -> List[str]:
         r"""Fetches the tag indexes from the database.
 
         Returns:

@@ -1793,6 +1793,8 @@ class ChatAgent(BaseAgent):
         if tool_calls := response.choices[0].message.tool_calls:
             tool_call_requests = []
             for tool_call in tool_calls:
+                if tool_call.function is None:
+                    continue
                 tool_name = tool_call.function.name
                 tool_call_id = tool_call.id
                 args = json.loads(tool_call.function.arguments)
@@ -2239,7 +2241,13 @@ class ChatAgent(BaseAgent):
         Returns:
             FastMCP: An MCP server instance that can be run.
         """
-        from mcp.server.fastmcp import FastMCP
+        try:
+            from mcp.server.fastmcp import FastMCP
+        except ImportError:
+            raise ImportError(
+                "The 'mcp' package is required to use the MCP server features. "
+                "Install it with `pip install mcp`."
+            )
 
         # Combine dependencies
         all_dependencies = ["camel-ai[all]"]
@@ -2295,7 +2303,11 @@ class ChatAgent(BaseAgent):
                 "model_type": str(agent_instance.model_type),
                 "role_name": agent_instance.role_name,
                 "role_type": str(agent_instance.role_type),
-                "output_language": agent_instance.output_language or "None",
+                "output_language": (
+                    str(agent_instance.output_language)
+                    if agent_instance.output_language is not None
+                    else "None"
+                ),
                 "description": description,
             }
             return info

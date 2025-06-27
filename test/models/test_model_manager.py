@@ -62,6 +62,9 @@ def test_model_manager(
     assert len(model_manager.models) == models_number
     assert model_manager.current_model_index == 0
     for _ in range(calls_count):
+        model_manager.get_next_model()
+
+    assert model_manager.current_model_index == calls_count % models_number
         model_manager.run(messages)
 
     if strategy in ("not_existent", "round_robin"):

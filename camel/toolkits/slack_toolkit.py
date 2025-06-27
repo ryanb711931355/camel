@@ -21,10 +21,10 @@ from typing import TYPE_CHECKING, List, Optional
 from camel.toolkits.base import BaseToolkit
 from camel.utils import MCPServer
 
-if TYPE_CHECKING:
-    from ssl import SSLContext
-
+try:
     from slack_sdk import WebClient
+except ImportError:
+    WebClient = None
 
 from camel.logger import get_logger
 from camel.toolkits import FunctionTool
@@ -256,7 +256,13 @@ class SlackToolkit(BaseToolkit):
         Raises:
             SlackApiError: If an error occurs while sending the message.
         """
-        from slack_sdk.errors import SlackApiError
+        try:
+            from slack_sdk.errors import SlackApiError
+        except ImportError:
+            raise ImportError(
+                "slack_sdk is required for this toolkit. "
+                "Install it with `pip install slack_sdk`."
+            )
 
         try:
             slack_client = self._login_slack()
@@ -270,7 +276,7 @@ class SlackToolkit(BaseToolkit):
                 )
             return str(response)
         except SlackApiError as e:
-            return f"Error creating conversation: {e.response['error']}"
+            return f"Error sending message: {e.response['error']}"
 
     def delete_slack_message(
         self,
@@ -288,9 +294,15 @@ class SlackToolkit(BaseToolkit):
                 was delete successfully or an error message.
 
         Raises:
-            SlackApiError: If an error occurs while sending the message.
+            SlackApiError: If an error occurs while deleting the message.
         """
-        from slack_sdk.errors import SlackApiError
+        try:
+            from slack_sdk.errors import SlackApiError
+        except ImportError:
+            raise ImportError(
+                "slack_sdk is required for this toolkit. "
+                "Install it with `pip install slack_sdk`."
+            )
 
         try:
             slack_client = self._login_slack()
@@ -299,7 +311,7 @@ class SlackToolkit(BaseToolkit):
             )
             return str(response)
         except SlackApiError as e:
-            return f"Error creating conversation: {e.response['error']}"
+            return f"Error deleting message: {e.response['error']}"
 
     def get_tools(self) -> List[FunctionTool]:
         r"""Returns a list of FunctionTool objects representing the

@@ -16,19 +16,42 @@ import os
 from unittest.mock import MagicMock, patch
 
 import pytest
-from stripe import (
-    Balance,
-    BalanceTransaction,
-    Customer,
-    PaymentIntent,
-    Refund,
-)
 
-from camel.toolkits.stripe_toolkit import StripeToolkit
+try:
+    from stripe import (
+        Balance,
+        BalanceTransaction,
+        Customer,
+        PaymentIntent,
+        Refund,
+    )
+
+    from camel.toolkits.stripe_toolkit import StripeToolkit
+
+    stripe_available = True
+except ImportError:
+    stripe_available = False
+
+    class _StripeMissing:
+        def __getattr__(self, name):
+            raise ImportError(
+                "The optional 'stripe' package is not installed. "
+                "Install it to use StripeToolkit tests: pip install stripe"
+            )
+
+    Customer = _StripeMissing()
+    PaymentIntent = _StripeMissing()
+    Refund = _StripeMissing()
+    Balance = _StripeMissing()
+    BalanceTransaction = _StripeMissing()
+    StripeToolkit = _StripeMissing()
 
 
 @pytest.fixture(scope="function")
 def stripe_toolkit_fixture():
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     import stripe
 
     r"""Fixture to set up the StripeToolkit with a mock API key."""
@@ -45,6 +68,9 @@ r"""Customer Tests
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.Customer.retrieve')
 def test_customer_get_success(mock_customer_retrieve, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     customer_id = "cus_abc"
     customer_name = "Jody Telar"
@@ -65,6 +91,9 @@ def test_customer_get_success(mock_customer_retrieve, stripe_toolkit_fixture):
 def test_customer_get_exception(
     mock_customer_retrieve, stripe_toolkit_fixture
 ):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     customer_id = "invalid_id"
     exception_message = "Customer not found"
@@ -77,6 +106,9 @@ def test_customer_get_exception(
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.Customer.list')
 def test_customer_list_success(mock_customer_list, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     limit = 2
     customer1 = Customer()
@@ -103,6 +135,9 @@ def test_customer_list_success(mock_customer_list, stripe_toolkit_fixture):
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.Customer.list')
 def test_customer_list_exception(mock_customer_list, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     limit = 2
     exception_message = "List customers failed"
@@ -123,6 +158,9 @@ r"""Balance Tests
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.Balance.retrieve')
 def test_balance_get_success(mock_balance_retrieve, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     balance_data = Balance()
     balance_data.object = 'balance'
@@ -142,6 +180,9 @@ def test_balance_get_success(mock_balance_retrieve, stripe_toolkit_fixture):
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.Balance.retrieve')
 def test_balance_get_exception(mock_balance_retrieve, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     exception_message = "Balance retrieval failed"
     mock_balance_retrieve.side_effect = Exception(exception_message)
@@ -159,6 +200,9 @@ def test_balance_get_exception(mock_balance_retrieve, stripe_toolkit_fixture):
 def test_balance_transaction_list_success(
     mock_balance_transaction_list, stripe_toolkit_fixture
 ):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     limit = 2
     transaction1 = BalanceTransaction()
@@ -187,6 +231,9 @@ def test_balance_transaction_list_success(
 def test_balance_transaction_list_exception(
     mock_balance_transaction_list, stripe_toolkit_fixture
 ):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     limit = 2
     exception_message = "List balance transactions failed"
@@ -208,6 +255,9 @@ r"""Payment Tests
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.PaymentIntent.retrieve')
 def test_payment_get_success(mock_payment_retrieve, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     payment_id = "pi_123"
     payment_data = PaymentIntent()
@@ -227,6 +277,9 @@ def test_payment_get_success(mock_payment_retrieve, stripe_toolkit_fixture):
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.PaymentIntent.retrieve')
 def test_payment_get_exception(mock_payment_retrieve, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     payment_id = "invalid_id"
     exception_message = "Payment not found"
@@ -249,6 +302,9 @@ def test_payment_list_success(mock_payment_list, stripe_toolkit_fixture):
     payment1.id = 'pi_123'
     payment1.amount = 1000
 
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     payment2 = PaymentIntent()
     payment2.id = 'pi_456'
     payment2.amount = 2000
@@ -269,6 +325,9 @@ def test_payment_list_success(mock_payment_list, stripe_toolkit_fixture):
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.PaymentIntent.list')
 def test_payment_list_exception(mock_payment_list, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     limit = 2
     exception_message = "List payments failed"
@@ -289,6 +348,9 @@ r"""Refund Tests
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.Refund.retrieve')
 def test_refund_get_success(mock_refund_retrieve, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     refund_id = "re_123"
     refund_data = Refund()
@@ -308,6 +370,9 @@ def test_refund_get_success(mock_refund_retrieve, stripe_toolkit_fixture):
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.Refund.retrieve')
 def test_refund_get_exception(mock_refund_retrieve, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     refund_id = "invalid_id"
     exception_message = "Refund not found"
@@ -324,6 +389,9 @@ def test_refund_get_exception(mock_refund_retrieve, stripe_toolkit_fixture):
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.Refund.list')
 def test_refund_list_success(mock_refund_list, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     limit = 2
     refund1 = Refund()
@@ -350,6 +418,9 @@ def test_refund_list_success(mock_refund_list, stripe_toolkit_fixture):
 @pytest.mark.usefixtures("stripe_toolkit_fixture")
 @patch('stripe.Refund.list')
 def test_refund_list_exception(mock_refund_list, stripe_toolkit_fixture):
+    if not stripe_available:
+        pytest.skip("stripe package is not installed")
+
     # Arrange
     limit = 2
     exception_message = "List refunds failed"

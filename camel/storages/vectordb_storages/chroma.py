@@ -15,11 +15,16 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
 
 if TYPE_CHECKING:
-    from chromadb.api import ClientAPI
-    from chromadb.api.models.Collection import Collection
-    from chromadb.api.types import (
-        QueryResult,
-    )
+    try:
+        from chromadb.api import ClientAPI
+        from chromadb.api.models.Collection import Collection
+        from chromadb.api.types import (
+            QueryResult,
+        )
+    except ImportError:
+        ClientAPI = None  # type: ignore
+        Collection = None  # type: ignore
+        QueryResult = None  # type: ignore
 
 from camel.logger import get_logger
 from camel.storages.vectordb_storages import (
@@ -271,7 +276,13 @@ class ChromaStorage(BaseVectorStorage):
 
     def _get_connection_client(self) -> "ClientAPI":
         r"""Get ChromaDB client based on client type and user settings."""
-        import chromadb
+        try:
+            import chromadb
+        except ImportError:
+            raise RuntimeError(
+                "ChromaDB is not installed. Install it with "
+                "`pip install chromadb` to use this storage."
+            )
 
         # Map client types to handler methods
         client_handlers: Dict[
@@ -492,6 +503,7 @@ class ChromaStorage(BaseVectorStorage):
         """
         if not ids:
             return
+
         try:
             delete_kwargs: Dict[str, Any] = {'ids': ids}
             delete_kwargs.update(kwargs)
@@ -501,7 +513,6 @@ class ChromaStorage(BaseVectorStorage):
                 f"Successfully deleted {len(ids)} records from "
                 f"ChromaDB collection: {self.collection_name}"
             )
-
         except Exception as e:
             raise RuntimeError(f"Failed to delete records from ChromaDB: {e}")
 
@@ -544,103 +555,102 @@ class ChromaStorage(BaseVectorStorage):
         Raises:
             RuntimeError: If there is an error during the query process.
         """
+        # Query ChromaDB
+        query_kwargs: Dict[str, Any] = {
+            'query_embeddings': [query.query_vector],
+            'n_results': query.top_k,
+            'include': ["embeddings", "metadatas", "distances"],
+        }
+        query_kwargs.update(kwargs)
+
         try:
-            # Query ChromaDB
-            query_kwargs: Dict[str, Any] = {
-                'query_embeddings': [query.query_vector],
-                'n_results': query.top_k,
-                'include': ["embeddings", "metadatas", "distances"],
-            }
-            query_kwargs.update(kwargs)
-
             results: "QueryResult" = self._collection.query(**query_kwargs)
-
-            # Convert ChromaDB results to VectorDBQueryResult format
-            query_results: List[VectorDBQueryResult] = []
-
-            if results.get("ids") and len(results["ids"]) > 0:
-                ids: List[str] = results["ids"][0]
-
-                # Safely extract embeddings with proper type handling
-                embeddings_result = results.get("embeddings")
-                if embeddings_result and len(embeddings_result) > 0:
-                    embeddings_raw = embeddings_result[0]
-                    # Convert to List[List[float]] format
-                    if embeddings_raw is not None:
-                        embeddings: List[List[float]] = []
-                        for emb in embeddings_raw:
-                            if hasattr(emb, '__iter__'):
-                                # Convert any array-like structure to
-                                # list of floats
-                                embeddings.append([float(x) for x in emb])
-                            else:
-                                embeddings.append([])
-                    else:
-                        embeddings = []
-                else:
-                    embeddings = []
-
-                # Safely extract metadatas with proper type handling
-                metadatas_result = results.get("metadatas")
-                if metadatas_result and len(metadatas_result) > 0:
-                    metadatas_raw = metadatas_result[0]
-                    # Convert to List[Dict[str, Any]] format
-                    if metadatas_raw is not None:
-                        metadatas: List[Dict[str, Any]] = []
-                        for meta in metadatas_raw:
-                            if meta is not None:
-                                # Convert Mapping to Dict
-                                metadatas.append(dict(meta))
-                            else:
-                                metadatas.append({})
-                    else:
-                        metadatas = []
-                else:
-                    metadatas = []
-
-                # Safely extract distances with proper type handling
-                distances_result = results.get("distances")
-                if distances_result and len(distances_result) > 0:
-                    distances_raw = distances_result[0]
-                    distances: List[float] = (
-                        list(distances_raw)
-                        if distances_raw is not None
-                        else []
-                    )
-                else:
-                    distances = []
-
-                for i, record_id in enumerate(ids):
-                    # ChromaDB returns distances (lower is more similar)
-                    # Convert to similarity score (higher is more similar)
-                    distance: float = (
-                        distances[i] if i < len(distances) else 1.0
-                    )
-                    similarity: float = self._distance_to_similarity(distance)
-
-                    embedding: List[float] = (
-                        embeddings[i] if i < len(embeddings) else []
-                    )
-                    metadata: Dict[str, Any] = (
-                        metadatas[i] if i < len(metadatas) else {}
-                    )
-
-                    result = VectorDBQueryResult.create(
-                        similarity=similarity,
-                        vector=embedding,
-                        id=record_id,
-                        payload=metadata,
-                    )
-                    query_results.append(result)
-
-            logger.debug(
-                f"Query returned {len(query_results)} results from "
-                f"ChromaDB collection: {self.collection_name}"
-            )
-            return query_results
-
         except Exception as e:
             raise RuntimeError(f"Failed to query ChromaDB: {e}")
+
+        # Convert ChromaDB results to VectorDBQueryResult format
+        query_results: List[VectorDBQueryResult] = []
+
+        if results.get("ids") and len(results["ids"]) > 0:
+            ids: List[str] = results["ids"][0]
+
+            # Safely extract embeddings with proper type handling
+            embeddings_result = results.get("embeddings")
+            if embeddings_result and len(embeddings_result) > 0:
+                embeddings_raw = embeddings_result[0]
+                # Convert to List[List[float]] format
+                if embeddings_raw is not None:
+                    embeddings: List[List[float]] = []
+                    for emb in embeddings_raw:
+                        if hasattr(emb, '__iter__'):
+                            # Convert any array-like structure to
+                            # list of floats
+                            embeddings.append([float(x) for x in emb])
+                        else:
+                            embeddings.append([])
+                else:
+                    embeddings = []
+            else:
+                embeddings = []
+
+            # Safely extract metadatas with proper type handling
+            metadatas_result = results.get("metadatas")
+            if metadatas_result and len(metadatas_result) > 0:
+                metadatas_raw = metadatas_result[0]
+                # Convert to List[Dict[str, Any]] format
+                if metadatas_raw is not None:
+                    metadatas: List[Dict[str, Any]] = []
+                    for meta in metadatas_raw:
+                        if meta is not None:
+                            # Convert Mapping to Dict
+                            metadatas.append(dict(meta))
+                        else:
+                            metadatas.append({})
+                else:
+                    metadatas = []
+            else:
+                metadatas = []
+
+            # Safely extract distances with proper type handling
+            distances_result = results.get("distances")
+            if distances_result and len(distances_result) > 0:
+                distances_raw = distances_result[0]
+                distances: List[float] = (
+                    list(distances_raw)
+                    if distances_raw is not None
+                    else []
+                )
+            else:
+                distances = []
+
+            for i, record_id in enumerate(ids):
+                # ChromaDB returns distances (lower is more similar)
+                # Convert to similarity score (higher is more similar)
+                distance: float = (
+                    distances[i] if i < len(distances) else 1.0
+                )
+                similarity: float = self._distance_to_similarity(distance)
+
+                embedding: List[float] = (
+                    embeddings[i] if i < len(embeddings) else []
+                )
+                metadata: Dict[str, Any] = (
+                    metadatas[i] if i < len(metadatas) else {}
+                )
+
+                result = VectorDBQueryResult.create(
+                    similarity=similarity,
+                    vector=embedding,
+                    id=record_id,
+                    payload=metadata,
+                )
+                query_results.append(result)
+
+        logger.debug(
+            f"Query returned {len(query_results)} results from "
+            f"ChromaDB collection: {self.collection_name}"
+        )
+        return query_results
 
     def _distance_to_similarity(self, distance: float) -> float:
         r"""Convert distance to similarity score based on distance metric.
@@ -674,19 +684,15 @@ class ChromaStorage(BaseVectorStorage):
         Raises:
             RuntimeError: If there is an error clearing the collection.
         """
-        try:
-            # Delete the current collection
-            self._client.delete_collection(name=self.collection_name)
+        # Delete the current collection
+        self._client.delete_collection(name=self.collection_name)
 
-            # Recreate the collection
-            self._collection = self._get_or_create_collection()
+        # Recreate the collection
+        self._collection = self._get_or_create_collection()
 
-            logger.info(
-                f"Successfully cleared collection: {self.collection_name}"
-            )
-
-        except Exception as e:
-            raise RuntimeError(f"Failed to clear ChromaDB collection: {e}")
+        logger.info(
+            f"Successfully cleared collection: {self.collection_name}"
+        )
 
     def load(self) -> None:
         r"""Load the collection hosted on cloud service.
@@ -704,13 +710,10 @@ class ChromaStorage(BaseVectorStorage):
         Raises:
             RuntimeError: If there is an error deleting the collection.
         """
-        try:
-            self._client.delete_collection(name=self.collection_name)
-            logger.info(
-                f"Successfully deleted collection: {self.collection_name}"
-            )
-        except Exception as e:
-            raise RuntimeError(f"Failed to delete ChromaDB collection: {e}")
+        self._client.delete_collection(name=self.collection_name)
+        logger.info(
+            f"Successfully deleted collection: {self.collection_name}"
+        )
 
     @property
     def client(self) -> "ClientAPI":

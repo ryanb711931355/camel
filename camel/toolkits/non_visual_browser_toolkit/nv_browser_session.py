@@ -191,7 +191,7 @@ class NVBrowserSession:
             else:
                 try:
                     if not loop.is_closed():
-                        loop.run_until_complete(session._close_session())
+                        await loop.run_until_complete(session._close_session())
                 except Exception as e:
                     logger.warning(
                         "Failed to close session for loop %s: %s",

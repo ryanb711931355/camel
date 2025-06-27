@@ -164,6 +164,7 @@ class HybridRetriever(BaseRetriever):
     ) -> Union[
         dict[str, Sequence[Collection[str]]],
         dict[str, Sequence[Union[str, float]]],
+        dict[str, Union[str, List[Dict[str, Any]]]],
     ]:
         r"""Executes a hybrid retrieval query using both vector and BM25
         retrievers.

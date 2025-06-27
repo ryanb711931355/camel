@@ -148,6 +148,7 @@ class AsyncBaseBrowser:
         """
         from playwright.async_api import (
             async_playwright,
+            Page,
         )
 
         self.history: list[Any] = []
@@ -260,13 +261,13 @@ class AsyncBaseBrowser:
         Args:
             timeout (int): Timeout in seconds.
         """
-        timeout_ms = timeout * 1000
+        timeout_ms = float(timeout * 1000)
         await self.page.wait_for_load_state("load", timeout=timeout_ms)
 
         # TODO: check if this is needed
         await asyncio.sleep(2)
 
-    def wait_for_load(self, timeout: int = 20) -> Coroutine[Any, Any, None]:
+    def wait_for_load(self, timeout: int = 20) -> None:
         r"""Wait for a certain amount of time for the page to load.
 
         Args:
@@ -277,22 +278,22 @@ class AsyncBaseBrowser:
     async def async_click_blank_area(self) -> None:
         r"""Asynchronously click a blank area of the page to unfocus
         the current element."""
-        await self.page.mouse.click(0, 0)
+        await self.page.mouse.click(0.0, 0.0)
         await self.wait_for_load()
 
-    def click_blank_area(self) -> Coroutine[Any, Any, None]:
+    def click_blank_area(self) -> None:
         r"""Click a blank area of the page to unfocus the current element."""
         return self.async_click_blank_area()
 
     async def async_visit_page(self, url: str) -> None:
         r"""Visit a page with the given URL."""
 
-        await self.page.goto(url)
+        await self.page.goto(str(url))
         await self.wait_for_load()
         self.page_url = url
 
     @retry_on_error()
-    def visit_page(self, url: str) -> Coroutine[Any, Any, None]:
+    def visit_page(self, url: str) -> None:
         r"""Visit a page with the given URL."""
 
         return self.async_visit_page(url)
@@ -327,6 +328,9 @@ class AsyncBaseBrowser:
         ):
             model = self.web_agent_model
 
+        if model is None:
+            raise ValueError("No web agent model available for video analysis.")
+
         video_analyzer = VideoAnalysisToolkit(model=model)
         result = video_analyzer.ask_question_about_video(current_url, question)
         return result
@@ -346,7 +350,7 @@ class AsyncBaseBrowser:
             image and the path to the image file if saved, otherwise
             :obj:`None`.
         """
-        image_data = await self.page.screenshot(timeout=60000)
+        image_data = await self.page.screenshot(timeout=float(60000))
         image = Image.open(io.BytesIO(image_data))
 
         file_path = None
@@ -370,7 +374,7 @@ class AsyncBaseBrowser:
     @retry_on_error()
     def get_screenshot(
         self, save_image: bool = False
-    ) -> Coroutine[Any, Any, Tuple[Image.Image, Union[str, None]]]:
+    ) -> Tuple[Image.Image, Union[str, None]]:
         r"""Get a screenshot of the current page.
 
         Args:
@@ -435,7 +439,7 @@ class AsyncBaseBrowser:
 
     def capture_full_page_screenshots(
         self, scroll_ratio: float = 0.8
-    ) -> Coroutine[Any, Any, List[str]]:
+    ) -> List[str]:
         r"""Capture full page screenshots by scrolling the page with
             a buffer zone.
 
@@ -460,12 +464,15 @@ class AsyncBaseBrowser:
             logger.warning(f"Error evaluating page script: {e}")
 
         return visual_viewport_from_dict(
-            await self.page.evaluate(
-                "MultimodalWebSurfer.getVisualViewport();"
+            cast(
+                Dict[str, Any],
+                await self.page.evaluate(
+                    "MultimodalWebSurfer.getVisualViewport();"
+                ),
             )
         )
 
-    def get_visual_viewport(self) -> Coroutine[Any, Any, VisualViewport]:
+    def get_visual_viewport(self) -> VisualViewport:
         r"""Get the visual viewport of the current page."""
         return self.async_get_visual_viewport()
 
@@ -755,7 +762,7 @@ class AsyncBaseBrowser:
         await self.wait_for_load()
         return "Scrolled to the top of the page."
 
-    def scroll_to_top(self) -> Coroutine[Any, Any, str]:
+    def scroll_to_top(self) -> str:
         r"""Scroll to the top of the page."""
         return self.async_scroll_to_top()
 
@@ -787,7 +794,7 @@ class AsyncBaseBrowser:
 
     def hover_id(
         self, identifier: Union[str, int]
-    ) -> Coroutine[Any, Any, str]:
+    ) -> str:
         r"""Hover over an element with the given identifier."""
         return self.async_hover_id(identifier)
 
@@ -864,7 +871,7 @@ class AsyncBaseBrowser:
         await asyncio.sleep(1)
         await self.wait_for_load()
 
-    def back(self) -> Coroutine[Any, Any, None]:
+    def back(self) -> None:
         r"""Navigate back to the previous page."""
         return self.async_back()
 
@@ -899,7 +906,7 @@ class AsyncBaseBrowser:
         }
         """)
 
-    def show_interactive_elements(self) -> Coroutine[Any, Any, None]:
+    def show_interactive_elements(self) -> None:
         r"""Show simple interactive elements on the current page."""
         return self.async_show_interactive_elements()
 
@@ -915,7 +922,7 @@ class AsyncBaseBrowser:
         return markdown_content
 
     @retry_on_error()
-    def get_webpage_content(self) -> Coroutine[Any, Any, str]:
+    def get_webpage_content(self) -> str:
         r"""Extract the content of the current page."""
         return self.async_get_webpage_content()
 
@@ -970,7 +977,7 @@ class AsyncBaseBrowser:
             except Exception as e:
                 raise RuntimeError(f"Installation failed: {e}")
 
-    def _ensure_browser_installed(self) -> Coroutine[Any, Any, None]:
+    def _ensure_browser_installed(self) -> None:
         r"""Ensure the browser is installed."""
         return self.async_ensure_browser_installed()
 

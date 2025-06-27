@@ -14,7 +14,10 @@
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from mcp.server.fastmcp import Context
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from mcp.server.fastmcp import Context
 
 from camel.messages import BaseMessage
 from camel.responses import ChatAgentResponse

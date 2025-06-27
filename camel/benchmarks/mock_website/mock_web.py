@@ -80,7 +80,7 @@ def download_website_assets(project_name: str):
 
     try:
         # Download only the project's folder
-        snapshot_path = snapshot_download(
+        snapshot_path = snapshot_download(  # type: ignore[call-overload]
             repo_id=repo_id,
             repo_type="dataset",
             allow_patterns=project_pattern,

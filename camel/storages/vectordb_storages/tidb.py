@@ -28,7 +28,11 @@ from camel.storages.vectordb_storages import (
 from camel.utils import dependencies_required
 
 if TYPE_CHECKING:
-    from pytidb import Table, TiDBClient
+    try:
+        from pytidb import Table, TiDBClient
+    except ImportError:
+        Table = Any  # type: ignore
+        TiDBClient = Any  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -107,8 +111,14 @@ class TiDBStorage(BaseVectorStorage):
         )
 
     def _get_table_model(self, collection_name: str) -> Any:
-        from pytidb.schema import Field, TableModel, VectorField
-        from sqlalchemy import JSON
+        try:
+            from pytidb.schema import Field, TableModel, VectorField
+            from sqlalchemy import JSON
+        except ImportError:
+            Field = Any  # type: ignore
+            TableModel = Any  # type: ignore
+            VectorField = Any  # type: ignore
+            JSON = Any  # type: ignore
 
         class VectorDBRecord(TableModel):
             id: Optional[str] = Field(None, primary_key=True)
@@ -124,7 +134,7 @@ class TiDBStorage(BaseVectorStorage):
             table=True,
         )
 
-    def _open_and_create_table(self) -> "Table[Any]":
+    def _open_and_create_table(self) -> Any:
         r"""Opens an existing table or creates a new table in TiDB."""
         table = self._client.open_table(self.collection_name)
         if table is None:

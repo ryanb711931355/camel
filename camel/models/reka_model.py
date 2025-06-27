@@ -38,8 +38,10 @@ if os.environ.get("LANGFUSE_ENABLED", "False").lower() == "true":
 else:
     from camel.utils import observe
 
-if TYPE_CHECKING:
+try:
     from reka.types import ChatMessage, ChatResponse
+except ImportError:
+    from camel.utils import observe
 
 try:
     import os
@@ -92,7 +94,13 @@ class RekaModel(BaseModelBackend):
         timeout: Optional[float] = None,
         **kwargs: Any,
     ) -> None:
-        from reka.client import AsyncReka, Reka
+        try:
+            from reka.client import AsyncReka, Reka
+        except ImportError:
+            raise ImportError(
+                "The 'reka' package is required to use RekaModel. "
+                "Install it via `pip install reka` or `pip install camel-ai[reka]`."
+            )
 
         if model_config_dict is None:
             model_config_dict = RekaConfig().as_dict()
@@ -133,6 +141,12 @@ class RekaModel(BaseModelBackend):
         Returns:
             ChatCompletion: An OpenAI-compatible chat completion response.
         """
+        if not response.responses:
+            raise ValueError(
+                "Reka API returned an empty response. "
+                "Check the API key and request parameters."
+            )
+
         openai_response = ChatCompletion.construct(
             id=response.id,
             choices=[
@@ -183,17 +197,7 @@ class RekaModel(BaseModelBackend):
                     ChatMessage(role="assistant", content=content)
                 )
             elif role == "system":
-                reka_messages.append(ChatMessage(role="user", content=content))
-
-                # Add one more assistant msg since Reka requires conversation
-                # history must alternate between 'user' and 'assistant',
-                # starting and ending with 'user'.
-                reka_messages.append(
-                    ChatMessage(
-                        role="assistant",
-                        content="",
-                    )
-                )
+                reka_messages.append(ChatMessage(role="assistant", content=content))
             else:
                 raise ValueError(f"Unsupported message role: {role}")
 
@@ -210,9 +214,7 @@ class RekaModel(BaseModelBackend):
                 tokenization style.
         """
         if not self._token_counter:
-            self._token_counter = OpenAITokenCounter(
-                model=ModelType.GPT_4O_MINI
-            )
+            self._token_counter = OpenAITokenCounter(model=self.model_config.model)
         return self._token_counter
 
     @observe(as_type="generation")

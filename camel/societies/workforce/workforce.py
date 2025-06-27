@@ -906,7 +906,7 @@ class Workforce(BaseNode):
                 task_type=task.type,
                 metadata=task.additional_info,
             )
-        task.state = TaskState.FAILED
+        task.state = TaskState.OPEN
         # The agent tend to be overconfident on the whole task, so we
         # decompose the task into subtasks first
         subtasks = self._decompose_task(task)
@@ -1259,6 +1259,7 @@ class Workforce(BaseNode):
     async def _async_reset(self) -> None:
         r"""Async implementation of reset to run on the event loop."""
         self._pause_event.set()
+        await asyncio.sleep(0)
 
     @check_if_running(False)
     def reset(self) -> None:
@@ -1685,7 +1686,7 @@ class Workforce(BaseNode):
             return self.new_worker_agent
         else:
             # Default tools for a new agent
-            function_list = [
+            function_list: List[Callable[..., Any]] = [
                 SearchToolkit().search_duckduckgo,
                 *CodeExecutionToolkit().get_tools(),
                 *ThinkingToolkit().get_tools(),
@@ -2416,7 +2417,13 @@ class Workforce(BaseNode):
         Returns:
             FastMCP: An MCP server instance that can be run.
         """
-        from mcp.server.fastmcp import FastMCP
+        try:
+            from mcp.server.fastmcp import FastMCP
+        except ImportError:
+            raise ImportError(
+                "The 'mcp' package is required for MCP server support. "
+                "Install it via `pip install mcp`."
+            ) from None
 
         # Combine dependencies
         all_dependencies = ["camel-ai[all]"]

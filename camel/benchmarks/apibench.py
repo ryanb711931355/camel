@@ -16,15 +16,17 @@ import json
 import logging
 import random
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional
 
-import tree_sitter_python as tspython
 from tqdm import tqdm
-from tree_sitter import Language, Parser
 
 from camel.agents import ChatAgent
 from camel.benchmarks.base import BaseBenchmark
 from camel.utils import download_github_subdirectory
+
+if TYPE_CHECKING:
+    from tree_sitter import Language, Parser
+    import tree_sitter_python as tspython
 
 logger = logging.getLogger(__name__)
 
@@ -330,8 +332,8 @@ class APIBenchBenchmark(BaseBenchmark):
                 f.flush()
 
         total = len(self._results)
-        correct = sum(r["correct"] for r in self.results)
-        hallucination = sum(r["hallucination"] for r in self.results)
+        correct = sum(r["correct"] for r in self._results)
+        hallucination = sum(r["hallucination"] for r in self._results)
 
         return {
             "total": total,

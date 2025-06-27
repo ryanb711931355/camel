@@ -17,7 +17,10 @@ from string import Template
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
-    from github.MainClass import Github
+    try:
+        from github.MainClass import Github
+    except ImportError:
+        Github = None
 from pydantic import BaseModel
 
 from camel.agents import ChatAgent
@@ -249,7 +252,10 @@ class RepoAgent(ChatAgent):
             RepositoryInfo: The object containing information
                 about the repository, including the contents.
         """
-        from github.ContentFile import ContentFile
+        try:
+            from github.ContentFile import ContentFile
+        except ImportError:
+            ContentFile = None
 
         try:
             owner, repo_name = self.parse_url(repo_url)
@@ -266,7 +272,7 @@ class RepoAgent(ChatAgent):
         )
 
         # Create a list to process repository contents
-        content_list: List[ContentFile] = []
+        content_list: List = []
         if isinstance(contents, list):
             content_list = contents
         else:

@@ -14,11 +14,12 @@
 import math
 import random
 import re
-from typing import Any, ClassVar, Dict, List, Literal, Optional, Tuple
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Literal, Optional, Tuple
 
-from camel.environments.models import Action, Observation
-from camel.environments.multi_step import MultiStepEnv
-from camel.extractors import BaseExtractor, BaseExtractorStrategy
+if TYPE_CHECKING:
+    from camel.environments.models import Action, Observation
+    from camel.environments.multi_step import MultiStepEnv
+    from camel.extractors import BaseExtractor, BaseExtractorStrategy
 
 
 class MoveExtractor(BaseExtractorStrategy):
@@ -81,6 +82,7 @@ class Opponent:
             if not moves:
                 return None  # Consistent with optimal strategy
             return random.choice(moves)
+        return None
 
     def get_optimal_move(self, board: List[str]) -> Optional[int]:
         r"""Get the optimal move using the minimax algorithm.
@@ -206,7 +208,7 @@ class TicTacToeEnv(MultiStepEnv):
         extractor: Optional[BaseExtractor] = None,
         max_steps: Optional[int] = None,
         play_style: Literal["optimal", "random"] = "optimal",
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         r"""Initialize the Tic Tac Toe environment.
 
@@ -483,7 +485,7 @@ class TicTacToeEnv(MultiStepEnv):
         # Check all win combinations.
         for a, b, c in TicTacToeEnv.WIN_COMBINATIONS:
             if board[a] != " " and board[a] == board[b] == board[c]:
-                return board[a]
+                return Literal["X"] if board[a] == "X" else Literal["O"]
         # Check for draw.
         if all(cell != " " for cell in board):
             return "draw"

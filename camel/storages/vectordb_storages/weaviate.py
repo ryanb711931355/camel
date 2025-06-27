@@ -26,8 +26,10 @@ from typing import (
     cast,
 )
 
-if TYPE_CHECKING:
+try:
     from weaviate import WeaviateClient
+except ImportError:
+    WeaviateClient = None  # type: ignore
 
 from camel.logger import get_logger
 from camel.storages.vectordb_storages import (
@@ -136,7 +138,6 @@ class WeaviateStorage(BaseVectorStorage):
         storage instance is destroyed.
     """
 
-    @dependencies_required('weaviate')
     def __init__(
         self,
         vector_dim: int,

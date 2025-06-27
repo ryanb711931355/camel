@@ -102,10 +102,15 @@ class SearchToolkit(BaseToolkit):
         """
         try:
             from linkup import LinkupClient
+        except ImportError:
+            raise ImportError(
+                "The `linkup` package is required for this search tool. "
+                "Install it via `pip install linkup`."
+            )
 
-            # Initialize the Linkup client with the API key
-            LINKUP_API_KEY = os.getenv("LINKUP_API_KEY")
-            client = LinkupClient(api_key=LINKUP_API_KEY)
+        # Initialize the Linkup client with the API key
+        LINKUP_API_KEY = os.getenv("LINKUP_API_KEY")
+        client = LinkupClient(api_key=LINKUP_API_KEY)
 
             # Perform the search using the specified output_type
             response = client.search(
@@ -374,7 +379,7 @@ class SearchToolkit(BaseToolkit):
         }
 
         response = requests.get(url, headers=headers, params=params)
-        data = response.json()["web"]
+        data = response.json()["web"]  # type: ignore[union-attr]
         return data
 
     @api_keys_required(
@@ -442,7 +447,7 @@ class SearchToolkit(BaseToolkit):
         try:
             # Make the get
             result = requests.get(url)
-            data = result.json()
+            data = result.json()  # type: ignore[union-attr]
 
             # Get the result items
             if "items" in data:
@@ -520,7 +525,13 @@ class SearchToolkit(BaseToolkit):
                 - 'published_date' (str): Publication date for news topics
                   (if available).
         """
-        from tavily import TavilyClient  # type: ignore[import-untyped]
+        try:
+            from tavily import TavilyClient
+        except ImportError:
+            raise ImportError(
+                "The `tavily` package is required for this search tool. "
+                "Install it via `pip install tavily`."
+            )
 
         Tavily_API_KEY = os.getenv("TAVILY_API_KEY")
         if not Tavily_API_KEY:
@@ -596,7 +607,7 @@ class SearchToolkit(BaseToolkit):
                         f"{response.text}"
                     )
                 }
-            return response.json()["data"]
+            return response.json()["data"]  # type: ignore[union-attr]
         except requests.exceptions.RequestException as e:
             return {"error": f"Bocha AI search failed: {e!s}"}
 

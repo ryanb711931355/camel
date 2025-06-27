@@ -25,6 +25,7 @@ from datetime import timedelta
 from enum import Enum
 from pathlib import Path
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -37,6 +38,10 @@ from typing import (
 import httpx
 import mcp.types as types
 from pydantic import BaseModel, model_validator
+
+if TYPE_CHECKING:
+    from mcp import ClientSession
+    from mcp.client.websocket import websocket_client
 
 try:
     from mcp.shared._httpx_utils import create_mcp_http_client
@@ -117,7 +122,7 @@ class ServerConfig(BaseModel):
     prefer_sse: bool = False
 
     @model_validator(mode='after')
-    def validate_config(self):
+    def validate_config(self) -> ServerConfig:
         r"""Validate that either command or url is provided."""
         if not self.command and not self.url:
             raise ValueError(
@@ -481,7 +486,13 @@ class MCPClient:
                     yield read_stream, write_stream, get_session_id
 
         elif transport_type == TransportType.WEBSOCKET:
-            from mcp.client.websocket import websocket_client
+            try:
+                from mcp.client.websocket import websocket_client
+            except ImportError:
+                raise RuntimeError(
+                    "WebSocket transport requires the 'mcp' package. "
+                    "Install it via `pip install mcp`."
+                )
 
             # Ensure URL is not None for WebSocket
             if not self.config.url:
@@ -752,7 +763,7 @@ class MCPClient:
             },
         }
 
-    def get_tools(self):
+    def get_tools(self) -> List[FunctionTool]:
         r"""Get available tools as CAMEL FunctionTool objects.
 
         Retrieves all available tools from the connected MCP server and

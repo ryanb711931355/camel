@@ -52,8 +52,14 @@ class GithubToolkit(BaseToolkit):
                 `get_github_access_token` method.
         """
         super().__init__(timeout=timeout)
-        from github.Auth import Token
-        from github.MainClass import Github
+        try:
+            from github.Auth import Token
+            from github.MainClass import Github
+        except ImportError:
+            raise RuntimeError(
+                "The 'PyGithub' package is required to use GitHubToolkit. "
+                "Install it with `pip install PyGithub`."
+            )
 
         if access_token is None:
             access_token = self.get_github_access_token()
@@ -110,9 +116,17 @@ class GithubToolkit(BaseToolkit):
             str: A formatted report of whether the pull request was created
                 successfully or not.
         """
+        try:
+            from github.ContentFile import ContentFile
+            from github.GithubException import GithubException
+        except ImportError:
+            raise RuntimeError(
+                "The 'PyGithub' package is required to use GitHubToolkit. "
+                "Install it with `pip install PyGithub`."
+            )
+
         repo = self.github.get_repo(repo_name)
         default_branch = repo.get_branch(repo.default_branch)
-        from github.GithubException import GithubException
 
         try:
             repo.create_git_ref(
@@ -129,8 +143,6 @@ class GithubToolkit(BaseToolkit):
                 raise
 
         file = repo.get_contents(file_path)
-
-        from github.ContentFile import ContentFile
 
         if isinstance(file, ContentFile):
             repo.update_file(
@@ -274,7 +286,8 @@ class GithubToolkit(BaseToolkit):
         comments = []
         # Returns all the comments in the pull request
         for comment in pr.get_comments():
-            comments.append({"user": comment.user.login, "body": comment.body})
+            if comment is not None:
+                comments.append({"user": comment.user.login, "body": comment.body})
 
         return comments
 
@@ -306,6 +319,8 @@ class GithubToolkit(BaseToolkit):
             files.append(contents.path)
         else:
             for content in contents:
+                if content is None:
+                    continue
                 if content.type == "dir":
                     # If it's a directory, recursively retrieve its file paths
                     files.extend(self.get_all_file_paths(content.path))
@@ -332,7 +347,7 @@ class GithubToolkit(BaseToolkit):
         if isinstance(file_content, ContentFile):
             return file_content.decoded_content.decode()
         else:
-            raise ValueError("PRs with multiple files aren't supported yet.")
+            raise ValueError("File content is not a single file.")
 
     def get_tools(self) -> List[FunctionTool]:
         r"""Returns a list of FunctionTool objects representing the functions

@@ -25,9 +25,12 @@ class BaseToolkit(metaclass=AgentOpsMeta):
         timeout (Optional[float]): The timeout for the toolkit.
     """
 
-    from mcp.server import FastMCP
+    try:
+        from mcp.server import FastMCP
+    except ImportError:
+        FastMCP = None  # type: ignore
 
-    mcp: FastMCP
+    mcp: Optional[FastMCP] = None
     timeout: Optional[float] = None
 
     def __init__(self, timeout: Optional[float] = None):
@@ -62,4 +65,9 @@ class BaseToolkit(metaclass=AgentOpsMeta):
             mode (Literal["stdio", "sse", "streamable-http"]): The mode to run
                 the MCP server in.
         """
+        if self.mcp is None:
+            raise RuntimeError(
+                "MCP server support is not available. "
+                "Install the 'mcp' package to enable this feature."
+            )
         self.mcp.run(mode)

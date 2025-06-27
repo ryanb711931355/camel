@@ -15,10 +15,14 @@
 import os
 from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
-if TYPE_CHECKING:
+try:
     from aci.types.app_configurations import AppConfiguration
     from aci.types.apps import AppBasic, AppDetails
     from aci.types.linked_accounts import LinkedAccount
+
+    _ACI_AVAILABLE = True
+except ImportError:
+    _ACI_AVAILABLE = False
 
 from camel.logger import get_logger
 from camel.toolkits import FunctionTool
@@ -36,7 +40,6 @@ logger = get_logger(__name__)
 class ACIToolkit(BaseToolkit):
     r"""A toolkit for interacting with the ACI API."""
 
-    @dependencies_required('aci')
     def __init__(
         self,
         api_key: Optional[str] = None,
@@ -57,6 +60,12 @@ class ACIToolkit(BaseToolkit):
             timeout (Optional[float]): Request timeout.
                 (default: :obj:`None`)
         """
+        if not _ACI_AVAILABLE:
+            raise ImportError(
+                "The 'aci' package is required to use the ACI toolkit. "
+                "Install it with `pip install aci`."
+            )
+
         from aci import ACI
 
         super().__init__(timeout)
@@ -150,7 +159,13 @@ class ACIToolkit(BaseToolkit):
         Returns:
             Union[Dict, str]: Configuration result or error message.
         """
-        from aci.types.enums import SecurityScheme
+        try:
+            from aci.types.enums import SecurityScheme
+        except ImportError:
+            raise ImportError(
+                "The 'aci' package is required to use the ACI toolkit. "
+                "Install it with `pip install aci`."
+            )
 
         try:
             app_details = self.get_app_details(app_name)
@@ -265,7 +280,7 @@ class ACIToolkit(BaseToolkit):
                 successful, error message otherwise.
         """
         try:
-            accounts = self.client.linked_accounts.list(app_name=app_name)
+            accounts = self.client.linked_accounts.list(app_name=app_name)  # type: ignore[union-attr]
             return accounts
         except Exception as e:
             logger.error(f"Error: {e}")
@@ -286,7 +301,7 @@ class ACIToolkit(BaseToolkit):
         try:
             linked_account = self.client.linked_accounts.enable(
                 linked_account_id=linked_account_id
-            )
+            )  # type: ignore[union-attr]
             return linked_account
         except Exception as e:
             logger.error(f"Error: {e}")
@@ -307,7 +322,7 @@ class ACIToolkit(BaseToolkit):
         try:
             linked_account = self.client.linked_accounts.disable(
                 linked_account_id=linked_account_id
-            )
+            )  # type: ignore[union-attr]
             return linked_account
         except Exception as e:
             logger.error(f"Error: {e}")
@@ -325,7 +340,7 @@ class ACIToolkit(BaseToolkit):
         try:
             self.client.linked_accounts.delete(
                 linked_account_id=linked_account_id
-            )
+            )  # type: ignore[union-attr]
             return (
                 f"linked_account_id: {linked_account_id} deleted successfully"
             )
@@ -342,7 +357,7 @@ class ACIToolkit(BaseToolkit):
         Returns:
             Dict: Function definition dictionary.
         """
-        return self.client.functions.get_definition(func_name)
+        return self.client.functions.get_definition(func_name)  # type: ignore[union-attr]
 
     def search_function(
         self,
@@ -375,7 +390,7 @@ class ACIToolkit(BaseToolkit):
             allowed_apps_only=allowed_apps_only,
             limit=limit,
             offset=offset,
-        )
+        )  # type: ignore[union-attr]
 
     def execute_function(
         self,
@@ -405,7 +420,7 @@ class ACIToolkit(BaseToolkit):
             function_arguments,
             linked_account_owner_id,
             allowed_apps_only,
-        )
+        )  # type: ignore[union-attr]
         return result
 
     def get_tools(self) -> List[FunctionTool]:
@@ -419,7 +434,7 @@ class ACIToolkit(BaseToolkit):
             app.app_name  # type: ignore[union-attr]
             for app in self.list_configured_apps() or []
         ]
-        _all_function = self.search_function(app_names=_configure_app)
+        _all_function = self.search_function(app_names=_configure_app)  # type: ignore[assignment]
         tools = [
             FunctionTool(self.search_tool),
             FunctionTool(self.list_configured_apps),
@@ -439,7 +454,7 @@ class ACIToolkit(BaseToolkit):
         for function in _all_function:
             schema = self.client.functions.get_definition(
                 function['function']['name']
-            )
+            )  # type: ignore[union-attr]
 
             def dummy_func(*, schema=schema, **kwargs):
                 return self.execute_function(

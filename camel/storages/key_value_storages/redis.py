@@ -20,7 +20,10 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from camel.storages.key_value_storages import BaseKeyValueStorage
 
 if TYPE_CHECKING:
-    from redis.asyncio import Redis
+    try:
+        from redis.asyncio import Redis
+    except ImportError:
+        Redis = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 

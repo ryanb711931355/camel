@@ -70,13 +70,19 @@ from .browser_toolkit_commons import (
 )
 
 if TYPE_CHECKING:
-    from playwright.sync_api import (
-        Browser,
-        BrowserContext,
-        FloatRect,
-        Page,
-        Playwright,
-    )
+    try:
+        from playwright.sync_api import (
+            Browser,
+            BrowserContext,
+            FloatRect,
+            Page,
+            Playwright,
+        )
+    except ImportError:
+        raise ImportError(
+            "playwright is required for browser_toolkit. "
+            "Install it with `pip install playwright` and run `playwright install`."
+        ) from None
 
     from camel.agents import ChatAgent
 
@@ -260,14 +266,14 @@ class BaseBrowser:
     def click_blank_area(self) -> None:
         r"""Click a blank area of the page to unfocus the current element."""
         assert self.page is not None
-        self.page.mouse.click(0, 0)
+        self.page.mouse.click(0.0, 0.0)
         self._wait_for_load()
 
     @retry_on_error()
     def visit_page(self, url: str) -> None:
         r"""Visit a page with the given URL."""
         assert self.page is not None
-        self.page.goto(url)
+        self.page.goto(str(url))
         self._wait_for_load()
         self.page_url = url
 

@@ -19,6 +19,11 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
+try:
+    from pptx import Presentation
+except ImportError:
+    Presentation = None  # type: ignore
+
 if TYPE_CHECKING:
     from pptx import presentation
     from pptx.slide import Slide
@@ -122,7 +127,10 @@ class PPTXToolkit(BaseToolkit):
             set_color_to_white (bool): Whether to set the color to white.
                 (default: :obj:`False`)
         """
-        from pptx.dml.color import RGBColor
+        try:
+            from pptx.dml.color import RGBColor
+        except ImportError:
+            RGBColor = None  # type: ignore
 
         matches = list(BOLD_ITALICS_PATTERN.finditer(text))
         last_index = 0
@@ -260,6 +268,12 @@ class PPTXToolkit(BaseToolkit):
                 provided, the default template will be used. (default: :obj:
                 `None`)
         """
+        if Presentation is None:
+            raise RuntimeError(
+                "python-pptx is required to create PPTX files. "
+                "Install it via `pip install python-pptx`."
+            )
+
         from pptx import Presentation
 
         # Use template if provided, otherwise create new presentation
@@ -553,7 +567,8 @@ class PPTXToolkit(BaseToolkit):
         flat_items_list = self._get_flat_list_of_contents(
             slide_json['bullet_points'], level=0
         )
-        self._add_bulleted_items(text_col.text_frame, flat_items_list)
+        if text_col is not None and text_col.text_frame is not None:
+            self._add_bulleted_items(text_col.text_frame, flat_items_list)
 
         if not img_keywords:
             return True
@@ -565,7 +580,8 @@ class PPTXToolkit(BaseToolkit):
                 img_response = requests.get(img_keywords, timeout=30)
                 img_response.raise_for_status()
                 image_data = BytesIO(img_response.content)
-                pic_col.insert_picture(image_data)
+                if pic_col is not None:
+                    pic_col.insert_picture(image_data)  # type: ignore[arg-type]
                 return True
             except Exception as ex:
                 logger.error(
@@ -607,7 +623,8 @@ class PPTXToolkit(BaseToolkit):
                     img_response.raise_for_status()
                     image_data = BytesIO(img_response.content)
 
-                    pic_col.insert_picture(image_data)
+                    if pic_col is not None:
+                        pic_col.insert_picture(image_data)  # type: ignore[arg-type]
         except Exception as ex:
             logger.error(
                 'Error occurred while adding image to slide: %s', str(ex)
@@ -634,23 +651,35 @@ class PPTXToolkit(BaseToolkit):
         shapes.title.text = self._remove_slide_number_from_heading(
             slide_json['heading']
         )
-        left = slide.placeholders[1].left
-        top = slide.placeholders[1].top
-        width = slide.placeholders[1].width
-        height = slide.placeholders[1].height
+        try:
+            left = slide.placeholders[1].left
+            top = slide.placeholders[1].top
+            width = slide.placeholders[1].width
+            height = slide.placeholders[1].height
+        except (KeyError, AttributeError):
+            placeholders = self._get_slide_placeholders(slide)
+            idx = next(
+                (p[0] for p in placeholders if 'content' in p[1]),
+                1,
+            )
+            left = slide.shapes.placeholders[idx].left
+            top = slide.shapes.placeholders[idx].top
+            width = slide.shapes.placeholders[idx].width
+            height = slide.shapes.placeholders[idx].height
+
         table = slide.shapes.add_table(
             len(rows) + 1, len(headers), left, top, width, height
         ).table
 
         # Set headers
         for col_idx, header_text in enumerate(headers):
-            table.cell(0, col_idx).text = header_text
+            table.cell(0, col_idx).text = str(header_text)
             table.cell(0, col_idx).text_frame.paragraphs[0].font.bold = True
 
         # Fill in rows
         for row_idx, row_data in enumerate(rows, start=1):
             for col_idx, cell_text in enumerate(row_data):
-                table.cell(row_idx, col_idx).text = cell_text
+                table.cell(row_idx, col_idx).text = str(cell_text)
 
     def _handle_step_by_step_process(
         self,
@@ -680,6 +709,9 @@ class PPTXToolkit(BaseToolkit):
         shapes.title.text = self._remove_slide_number_from_heading(
             slide_json['heading']
         )
+
+        slide_width_inch = float(slide_width_inch)
+        slide_height_inch = float(slide_height_inch)
 
         if 3 <= n_steps <= 4:
             # Horizontal display
@@ -758,7 +790,10 @@ class PPTXToolkit(BaseToolkit):
         """
         if hasattr(slide.shapes, 'placeholders'):
             placeholders = [
-                (shape.placeholder_format.idx, shape.name.lower())
+                (
+                    int(shape.placeholder_format.idx),  # type: ignore[attr-defined]
+                    shape.name.lower(),
+                )
                 for shape in slide.shapes.placeholders
             ]
             if placeholders and len(placeholders) > 0:

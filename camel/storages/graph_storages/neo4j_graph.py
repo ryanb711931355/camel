@@ -94,7 +94,13 @@ class Neo4jGraph(BaseGraphStorage):
         truncate: bool = False,
     ) -> None:
         r"""Create a new Neo4j graph instance."""
-        import neo4j
+        try:
+            import neo4j
+        except ImportError:
+            raise RuntimeError(
+                "The 'neo4j' package is required for Neo4jGraph. "
+                "Install it via `pip install neo4j`."
+            )
 
         url = os.environ.get("NEO4J_URI") or url
         username = os.environ.get("NEO4J_USERNAME") or username
@@ -226,8 +232,14 @@ class Neo4jGraph(BaseGraphStorage):
         Raises:
             ValueError: If the executed Cypher query syntax is invalid.
         """
-        from neo4j import Query
-        from neo4j.exceptions import CypherSyntaxError
+        try:
+            from neo4j import Query
+            from neo4j.exceptions import CypherSyntaxError
+        except ImportError:
+            raise RuntimeError(
+                "The 'neo4j' package is required for Neo4jGraph. "
+                "Install it via `pip install neo4j`."
+            )
 
         if params is None:
             params = {}
@@ -562,8 +574,9 @@ class Neo4jGraph(BaseGraphStorage):
         )
         rel_import_query = self._get_rel_import_query(base_entity_label)
         for element in graph_elements:
-            if not element.source.to_dict()['element_id']:
-                element.source.to_dict()['element_id'] = md5(
+            source_dict = element.source.to_dict()
+            if not source_dict['element_id']:
+                source_dict['element_id'] = md5(
                     str(element).encode("utf-8")
                 ).hexdigest()
 
@@ -572,7 +585,7 @@ class Neo4jGraph(BaseGraphStorage):
                 node_import_query,
                 {
                     "data": [el.__dict__ for el in element.nodes],
-                    "element": element.source.to_dict(),
+                    "element": source_dict,
                 },
             )
             # Import relationships
@@ -755,38 +768,33 @@ class Neo4jGraph(BaseGraphStorage):
             List[Dict[str, Any]]: A list of matching triplets,
                 each containing subj, obj, rel, and timestamp.
         """
-        import logging
-
-        logging.basicConfig(level=logging.DEBUG)
-        logger = logging.getLogger(__name__)
-
         # Construct the query
-        query = """
-                MATCH (n1:Entity)-[r]->(n2:Entity)
-                WHERE ($subj IS NULL OR n1.id = $subj)
-                AND ($obj IS NULL OR n2.id = $obj)
-                AND ($rel IS NULL OR type(r) = $rel)
-                RETURN n1.id AS subj, n2.id AS obj, 
-                type(r) AS rel, r.timestamp AS timestamp
+        query = textwrap.dedent(
             """
+            MATCH (n1:Entity)-[r]->(n2:Entity)
+            WHERE ($subj IS NULL OR n1.id = $subj)
+            AND ($obj IS NULL OR n2.id = $obj)
+            AND ($rel IS NULL OR type(r) = $rel)
+            RETURN n1.id AS subj, n2.id AS obj, type(r) AS rel, r.timestamp AS timestamp
+            """
+        )
 
         # Construct the query parameters
         params = {
-            "subj": subj
-            if subj is not None
-            else None,  # If subj is None, match any subject node
-            "obj": obj
-            if obj is not None
-            else None,  # If obj is None, match any object node
-            "rel": rel
-            if rel is not None
-            else None,  # If rel is None, match any relationship type
+            "subj": subj if subj is not None else None,
+            "obj": obj if obj is not None else None,
+            "rel": rel if rel is not None else None,
         }
 
         logger.debug(f"Executing query: {query}")
         logger.debug(f"Query parameters: {params}")
 
         with self.driver.session(database=self.database) as session:
+            if session is None:
+                raise RuntimeError(
+                    "Neo4j driver session is not available. "
+                    "Ensure the driver is properly initialized."
+                )
             try:
                 result = session.run(query, params)
                 records = [record.data() for record in result]

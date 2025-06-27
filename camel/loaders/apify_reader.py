@@ -14,8 +14,10 @@
 import os
 from typing import TYPE_CHECKING, List, Optional
 
-if TYPE_CHECKING:
+try:
     from apify_client.clients import DatasetClient
+except ImportError:
+    DatasetClient = None  # type: ignore
 
 from camel.utils import api_keys_required
 

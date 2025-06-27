@@ -17,7 +17,10 @@ import tempfile
 
 import pytest
 
-from camel.toolkits.pptx_toolkit import PPTXToolkit
+try:
+    from camel.toolkits.pptx_toolkit import PPTXToolkit
+except ImportError:
+    PPTXToolkit = None
 
 
 @pytest.fixture
@@ -255,6 +258,8 @@ def test_create_presentation_auto_extension(pptx_toolkit):
 def test_sanitize_and_resolve_filepath(pptx_toolkit):
     r"""Test that _resolve_filepath sanitizes filenames with spaces and
     special characters."""
+    if pptx_toolkit is None:
+        pytest.skip("PPTXToolkit not available")
     # Test filename with spaces and special characters
     filename = "test file with spaces & special chars!.pptx"
     resolved_path = pptx_toolkit._resolve_filepath(filename)
@@ -268,6 +273,8 @@ def test_sanitize_and_resolve_filepath(pptx_toolkit):
 
 def test_resolve_filepath_absolute_path(pptx_toolkit):
     r"""Test _resolve_filepath with absolute paths."""
+    if pptx_toolkit is None:
+        pytest.skip("PPTXToolkit not available")
     # Create a temporary file path
     with tempfile.NamedTemporaryFile(
         suffix='.pptx', delete=False
@@ -288,6 +295,8 @@ def test_resolve_filepath_absolute_path(pptx_toolkit):
 
 def test_create_presentation_empty_content(pptx_toolkit):
     r"""Test creating a PPTX file with empty content list."""
+    if pptx_toolkit is None:
+        pytest.skip("PPTXToolkit not available")
     import json
 
     content = []

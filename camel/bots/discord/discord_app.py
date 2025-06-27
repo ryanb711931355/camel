@@ -15,12 +15,14 @@ import os
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, List, Optional
 
-import discord
 import httpx
 from fastapi import FastAPI
 
 from camel.bots.discord.discord_installation import DiscordInstallation
 from camel.logger import get_logger
+
+if TYPE_CHECKING:
+    import discord
 from camel.utils import api_keys_required, dependencies_required
 
 from .discord_store import DiscordBaseInstallationStore

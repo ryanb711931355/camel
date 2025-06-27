@@ -49,7 +49,13 @@ class AzureBlobStorage(BaseObjectStorage):
             # Make all the empty values None
             access_key = None
 
-        from azure.storage.blob import ContainerClient
+        try:
+            from azure.storage.blob import ContainerClient
+        except ImportError:
+            raise ImportError(
+                "azure-storage-blob is required for Azure Blob Storage. "
+                "Install it with `pip install azure-storage-blob`."
+            )
 
         self._client = ContainerClient(
             account_url="https://"
@@ -62,7 +68,13 @@ class AzureBlobStorage(BaseObjectStorage):
 
     def _prepare_and_check(self) -> None:
         r"""Check privileges and existence of the container."""
-        from azure.core.exceptions import ClientAuthenticationError
+        try:
+            from azure.core.exceptions import ClientAuthenticationError
+        except ImportError:
+            raise ImportError(
+                "azure-core is required for Azure Blob Storage. "
+                "Install it with `pip install azure-core`."
+            )
 
         try:
             exists = self._client.exists()

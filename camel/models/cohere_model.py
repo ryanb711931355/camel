@@ -21,7 +21,11 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from cohere.types import ChatMessageV2, ChatResponse
+    try:
+        from cohere.types import ChatMessageV2, ChatResponse
+    except ImportError:
+        ChatMessageV2 = None  # type: ignore
+        ChatResponse = None  # type: ignore
 
 from camel.configs import COHERE_API_PARAMS, CohereConfig
 from camel.messages import OpenAIMessage
@@ -189,14 +193,20 @@ class CohereModel(BaseModelBackend):
     def _to_cohere_chatmessage(
         self, messages: List[OpenAIMessage]
     ) -> List["ChatMessageV2"]:
-        from cohere.types import ToolCallV2Function
-        from cohere.types.chat_message_v2 import (
-            AssistantChatMessageV2,
-            SystemChatMessageV2,
-            ToolCallV2,
-            ToolChatMessageV2,
-            UserChatMessageV2,
-        )
+        try:
+            from cohere.types import ToolCallV2Function
+            from cohere.types.chat_message_v2 import (
+                AssistantChatMessageV2,
+                SystemChatMessageV2,
+                ToolCallV2,
+                ToolChatMessageV2,
+                UserChatMessageV2,
+            )
+        except ImportError:
+            raise ImportError(
+                "The `cohere` package is required to use the Cohere model backend. "
+                "Install it with `pip install cohere`."
+            )
 
         tool_call_id = None
         new_messages = []
@@ -221,6 +231,10 @@ class CohereModel(BaseModelBackend):
                     )
                 else:
                     arguments = function_call.get("arguments")  # type: ignore[attr-defined]
+                    if not isinstance(arguments, str):
+                        raise ValueError(
+                            f"Expected arguments to be a string, got {type(arguments).__name__}"
+                        )
                     arguments_dict = ast.literal_eval(arguments)
                     arguments_json = json.dumps(
                         arguments_dict, ensure_ascii=False

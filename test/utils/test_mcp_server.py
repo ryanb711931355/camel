@@ -16,21 +16,42 @@ import sys
 from typing import Literal
 
 import pytest
-from mcp.server import FastMCP
 
-from camel.toolkits.mcp_toolkit import MCPClient
-from camel.utils import MCPServer
+try:
+    from mcp.server import FastMCP
+except ImportError:
+    FastMCP = None
+
+try:
+    from camel.toolkits.mcp_toolkit import MCPClient
+except ImportError:
+    MCPClient = None
+
+try:
+    from camel.utils import MCPServer
+except ImportError:
+    MCPServer = None
 
 
-@MCPServer(
-    server_name="TextProcessorForMCP",
-    function_names=["reverse_text", "async_word_count"],
-)
-class TextProcessorForMCP:
-    mcp: FastMCP
+if MCPServer is not None:
 
-    def __init__(self):
-        pass
+    @MCPServer(
+        server_name="TextProcessorForMCP",
+        function_names=["reverse_text", "async_word_count"],
+    )
+    class TextProcessorForMCP:
+        mcp: FastMCP
+
+        def __init__(self):
+            pass
+
+else:
+
+    class TextProcessorForMCP:
+        mcp = None
+
+        def __init__(self):
+            pass
 
     def reverse_text(self, text: str) -> str:
         r"""reverse the text. the function is a synchronous function.
@@ -63,6 +84,8 @@ class TextProcessorForMCP:
 
 
 def test_tool_schema():
+    if FastMCP is None:
+        pytest.skip("mcp not installed")
     processor = TextProcessorForMCP()
     tools = processor.mcp._tool_manager.list_tools()
     tool_functions = {tool.name: tool for tool in tools}
@@ -90,6 +113,8 @@ def test_tool_schema():
 
 @pytest.mark.asyncio
 async def test_async_word_count():
+    if MCPClient is None:
+        pytest.skip("mcp not installed")
     processor = TextProcessorForMCP()
     async with MCPClient(
         config={
@@ -117,5 +142,7 @@ async def test_async_word_count():
 
 if __name__ == "__main__":
     if "--server" in sys.argv:
+        if MCPServer is None:
+            raise SystemExit("mcp not installed")
         processor = TextProcessorForMCP()
         processor.run_mcp_server("stdio")
