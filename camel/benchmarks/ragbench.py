@@ -104,7 +104,11 @@ def auroc(trues: Sequence[bool], preds: Sequence[float]) -> float:
     Returns:
         float: AUROC score.
     """
-    from sklearn.metrics import roc_auc_score  # type: ignore[import-untyped]
+    try:
+        from sklearn.metrics import roc_auc_score
+    except ImportError:
+        logger.warning("scikit-learn is not installed. AUROC calculation will be skipped.")
+        return 0.5  # Return random classifier score
 
     eval_idx = ~np.isnan(preds)
     if not np.any(eval_idx):

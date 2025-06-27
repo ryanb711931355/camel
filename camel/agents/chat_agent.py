@@ -150,20 +150,21 @@ class ChatAgent(BaseAgent):
             (default: :obj:`None`)
         output_language (str, optional): The language to be output by the
             agent. (default: :obj:`None`)
-        tools (Optional[List[Union[FunctionTool, Callable]]], optional): List
-            of available :obj:`FunctionTool` or :obj:`Callable`. (default:
-            :obj:`None`)
+        tools (Optional[List[Union[FunctionTool, Callable]]], optional):
+            List of available :obj:`FunctionTool` or :obj:`Callable`.
+            (default: :obj:`None`)
         external_tools (Optional[List[Union[FunctionTool, Callable,
             Dict[str, Any]]]], optional): List of external tools
             (:obj:`FunctionTool` or :obj:`Callable` or :obj:`Dict[str, Any]`)
             bind to one chat agent. When these tools are called, the agent will
             directly return the request instead of processing it.
             (default: :obj:`None`)
-        response_terminators (List[ResponseTerminator], optional): List of
-            :obj:`ResponseTerminator` bind to one chat agent.
+        response_terminators (List[ResponseTerminator], optional):
+            List of :obj:`ResponseTerminator` bind to one chat agent.
             (default: :obj:`None`)
         scheduling_strategy (str): name of function that defines how to select
-            the next model in ModelManager. (default: :str:`round_robin`)
+            the next model in ModelManager.
+            (default: :str:`round_robin`)
         max_iteration (Optional[int], optional): Maximum number of model
             calling iterations allowed per step. If `None` (default), there's
             no explicit limit. If `1`, it performs a single model call. If `N
@@ -249,9 +250,7 @@ class ChatAgent(BaseAgent):
             else system_message
         )
         self._output_language = output_language
-        self._system_message = (
-            self._generate_system_message_for_output_language()
-        )
+        self._system_message = self._generate_system_message_for_output_language()
         self.init_messages()
 
         # Set up role name and role type
@@ -267,14 +266,16 @@ class ChatAgent(BaseAgent):
         self._internal_tools = {
             tool.get_function_name(): tool
             for tool in [
-                convert_to_function_tool(tool) for tool in (tools or [])
+                convert_to_function_tool(tool)
+                for tool in (tools or [])
             ]
         }
 
         self._external_tool_schemas = {
             tool_schema["function"]["name"]: tool_schema
             for tool_schema in [
-                convert_to_schema(tool) for tool in (external_tools or [])
+                convert_to_schema(tool)
+                for tool in (external_tools or [])
             ]
         }
 
@@ -541,7 +542,6 @@ class ChatAgent(BaseAgent):
             timestamp (Optional[float], optional): Custom timestamp for the
                 memory record. If `None`, the current time will be used.
                 (default: :obj:`None`)
-                    (default: obj:`None`)
         """
         import math
         import time
@@ -884,7 +884,8 @@ class ChatAgent(BaseAgent):
 
             # Create a prompt based on the schema
             format_instruction = (
-                "\n\nPlease respond in the following JSON format:\n" "{\n"
+                "\n\nPlease respond in the following JSON format:\n"
+                "{\n"
             )
 
             properties = schema.get("properties", {})
@@ -1008,7 +1009,9 @@ class ChatAgent(BaseAgent):
 
                     # Try to extract JSON from text
                     json_pattern = r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
-                    json_matches = re.findall(json_pattern, content, re.DOTALL)
+                    json_matches = re.findall(
+                        json_pattern, content, re.DOTALL
+                    )
 
                     for json_str in json_matches:
                         try:
@@ -1052,7 +1055,9 @@ class ChatAgent(BaseAgent):
                 continue
 
             prompt = SIMPLE_FORMAT_PROMPT.format(content=message.content)
-            openai_message: OpenAIMessage = {"role": "user", "content": prompt}
+            openai_message: OpenAIMessage = {
+                "role": "user", "content": prompt
+            }
             # Explicitly set the tools to empty list to avoid calling tools
             response = self._get_model_response(
                 [openai_message], 0, response_format, []
@@ -1214,6 +1219,7 @@ class ChatAgent(BaseAgent):
         if used_prompt_formatting and original_response_format:
             self._apply_prompt_based_parsing(
                 response, original_response_format
+            )
             )
 
         self._record_final_output(response.output_messages)
@@ -1498,7 +1504,9 @@ class ChatAgent(BaseAgent):
         response = None
         try:
             response = await self.model_backend.arun(
-                openai_messages, response_format, tool_schemas or None
+                openai_messages,
+                response_format,
+                tool_schemas or None,
             )
         except Exception as exc:
             logger.error(
@@ -1966,8 +1974,10 @@ class ChatAgent(BaseAgent):
             raw_result = tool(**args)
             if self.mask_tool_output:
                 self._secure_result_store[tool_call_id] = raw_result
-                result= "[The tool has been executed successfully, but the output" \
-                        " from the tool is masked. You can move forward]"
+                result = (
+                    "[The tool has been executed successfully, but the output"
+                    " from the tool is masked. You can move forward]"
+                )
                 mask_flag = True
             else:
                 result = raw_result
@@ -2070,10 +2080,8 @@ class ChatAgent(BaseAgent):
         # This ensures the assistant message (tool call) always appears before
         # the function message (tool result) in the conversation context
         # Use time.time_ns() for nanosecond precision to avoid collisions
-        import time
-
         current_time_ns = time.time_ns()
-        base_timestamp = current_time_ns / 1_000_000_000  # Convert to seconds
+        base_timestamp = current_time_ns / 1_000_000_000
 
         self.update_memory(
             assist_msg, OpenAIBackendRole.ASSISTANT, timestamp=base_timestamp
@@ -2158,7 +2166,9 @@ class ChatAgent(BaseAgent):
                 self.memory.get_context_creator(), "token_limit", None
             ),
             output_language=self._output_language,
-            tools=[tool.func for tool in self._internal_tools.values()],
+            tools=[
+                tool.func for tool in self._internal_tools.values()
+            ],
             external_tools=[
                 schema for schema in self._external_tool_schemas.values()
             ],

@@ -16,9 +16,12 @@ from typing import List
 import pytest
 from _pytest.config import Config
 from _pytest.nodes import Item
-from dotenv import load_dotenv
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
