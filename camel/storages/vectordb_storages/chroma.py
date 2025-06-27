@@ -15,11 +15,11 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
 
 if TYPE_CHECKING:
-    from chromadb.api import ClientAPI
-    from chromadb.api.models.Collection import Collection
+    from chromadb.api import ClientAPI  # type: ignore[import-not-found]
+    from chromadb.api.models.Collection import Collection  # type: ignore[import-not-found]
     from chromadb.api.types import (
         QueryResult,
-    )
+    )  # type: ignore[import-not-found]
 
 from camel.logger import get_logger
 from camel.storages.vectordb_storages import (

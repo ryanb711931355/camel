@@ -469,14 +469,14 @@ class TicTacToeEnv(MultiStepEnv):
         return [i for i, cell in enumerate(board) if cell == " "]
 
     @staticmethod
-    def check_winner(board: List[str]) -> Optional[Literal["X", "O", "draw"]]:
+    def check_winner(board: List[str]) -> Optional[str]:
         r"""Check if there is a winner or a draw on the board.
 
         Args:
             board (List[str]): The current game board as a list of strings.
 
         Returns:
-            Optional[Literal["X", "O", "draw"]]: "X" if X has won, "O" if O
+            Optional[str]: "X" if X has won, "O" if O
                 has won, "draw" if the game is a draw, or None if the game is
                 still ongoing.
         """

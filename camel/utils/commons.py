@@ -1078,7 +1078,13 @@ def browser_toolkit_save_auth_cookie(
         complete the manual authentication process before the storage state
         is captured.
     """
-    from playwright.sync_api import sync_playwright
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        raise ImportError(
+            "The 'playwright' library is required for this function. "
+            "Please install it using 'pip install playwright' and then run 'playwright install'."
+        )
 
     playwright = sync_playwright().start()
 

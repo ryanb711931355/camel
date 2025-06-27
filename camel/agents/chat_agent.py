@@ -1800,6 +1800,8 @@ class ChatAgent(BaseAgent):
                     tool_name=tool_name, args=args, tool_call_id=tool_call_id
                 )
                 tool_call_requests.append(tool_call_request)
+        else:
+            tool_call_requests = None
 
         return ModelResponse(
             response=response,
@@ -2239,7 +2241,13 @@ class ChatAgent(BaseAgent):
         Returns:
             FastMCP: An MCP server instance that can be run.
         """
-        from mcp.server.fastmcp import FastMCP
+        try:
+            from mcp.server.fastmcp import FastMCP
+        except ImportError:
+            raise ImportError(
+                "The 'mcp' library is required for MCP functionality. "
+                "Please install it with: pip install mcp"
+            )
 
         # Combine dependencies
         all_dependencies = ["camel-ai[all]"]

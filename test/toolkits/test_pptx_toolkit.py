@@ -73,9 +73,9 @@ def test_create_presentation_basic(pptx_toolkit):
 
     # Verify it's a valid PPTX file by checking we can open it
     try:
-        import pptx
+        from pptx import Presentation
 
-        presentation = pptx.Presentation(str(file_path))
+        presentation = Presentation(str(file_path))
         # Should have 3 slides (1 title + 2 content)
         assert len(presentation.slides) == 3
     except ImportError:

@@ -16,9 +16,12 @@ import os
 from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 if TYPE_CHECKING:
-    from aci.types.app_configurations import AppConfiguration
-    from aci.types.apps import AppBasic, AppDetails
-    from aci.types.linked_accounts import LinkedAccount
+    try:
+        from aci.types.app_configurations import AppConfiguration
+        from aci.types.apps import AppBasic, AppDetails
+        from aci.types.linked_accounts import LinkedAccount
+    except ImportError:
+        pass
 
 from camel.logger import get_logger
 from camel.toolkits import FunctionTool
@@ -57,13 +60,19 @@ class ACIToolkit(BaseToolkit):
             timeout (Optional[float]): Request timeout.
                 (default: :obj:`None`)
         """
-        from aci import ACI
+        try:
+            from aci import ACI
+        except ImportError:
+            ACI = None
 
         super().__init__(timeout)
 
         self._api_key = api_key or os.getenv("ACI_API_KEY")
         self._base_url = base_url or os.getenv("ACI_BASE_URL")
-        self.client = ACI(api_key=self._api_key, base_url=self._base_url)
+        if ACI:
+            self.client = ACI(api_key=self._api_key, base_url=self._base_url)
+        else:
+            self.client = None
         self.linked_account_owner_id = linked_account_owner_id
 
     def search_tool(
@@ -150,16 +159,19 @@ class ACIToolkit(BaseToolkit):
         Returns:
             Union[Dict, str]: Configuration result or error message.
         """
-        from aci.types.enums import SecurityScheme
+        try:
+            from aci.types.enums import SecurityScheme
+        except ImportError:
+            SecurityScheme = None
 
         try:
             app_details = self.get_app_details(app_name)
             if app_details and app_details.security_schemes[0] == "api_key":
-                security_scheme = SecurityScheme.API_KEY
+                security_scheme = SecurityScheme.API_KEY if SecurityScheme else "api_key"
             elif app_details and app_details.security_schemes[0] == "oauth2":
-                security_scheme = SecurityScheme.OAUTH2
+                security_scheme = SecurityScheme.OAUTH2 if SecurityScheme else "oauth2"
             else:
-                security_scheme = SecurityScheme.NO_AUTH
+                security_scheme = SecurityScheme.NO_AUTH if SecurityScheme else "no_auth"
             configuration = self.client.app_configurations.create(
                 app_name=app_name, security_scheme=security_scheme
             )

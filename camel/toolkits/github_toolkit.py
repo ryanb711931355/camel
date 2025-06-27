@@ -52,8 +52,8 @@ class GithubToolkit(BaseToolkit):
                 `get_github_access_token` method.
         """
         super().__init__(timeout=timeout)
+        from github import Github
         from github.Auth import Token
-        from github.MainClass import Github
 
         if access_token is None:
             access_token = self.get_github_access_token()
@@ -110,9 +110,11 @@ class GithubToolkit(BaseToolkit):
             str: A formatted report of whether the pull request was created
                 successfully or not.
         """
+        from github import GithubException
+        from github.ContentFile import ContentFile
+
         repo = self.github.get_repo(repo_name)
         default_branch = repo.get_branch(repo.default_branch)
-        from github.GithubException import GithubException
 
         try:
             repo.create_git_ref(
@@ -129,8 +131,6 @@ class GithubToolkit(BaseToolkit):
                 raise
 
         file = repo.get_contents(file_path)
-
-        from github.ContentFile import ContentFile
 
         if isinstance(file, ContentFile):
             repo.update_file(

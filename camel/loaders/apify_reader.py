@@ -36,7 +36,7 @@ class Apify:
         self,
         api_key: Optional[str] = None,
     ) -> None:
-        from apify_client import ApifyClient
+        from apify_client import ApifyClient  # type: ignore[import-not-found]
 
         self._api_key = api_key or os.environ.get("APIFY_API_KEY")
         self.client = ApifyClient(token=self._api_key)

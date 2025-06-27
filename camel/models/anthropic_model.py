@@ -198,8 +198,6 @@ class AnthropicModel(OpenAICompatibleModel):
         """
         import functools
 
-        from anthropic.types import MessageParam
-
         from camel.utils import AnthropicTokenCounter
 
         original_count_tokens = (

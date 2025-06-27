@@ -405,7 +405,9 @@ class InternalPythonInterpreter(BaseInterpreter):
             keyword.arg: self._execute_ast(keyword.value)
             for keyword in call.keywords
         }
-        return callable_func(*args, **kwargs)
+        if callable(callable_func):
+            return callable_func(*args, **kwargs)
+        raise TypeError(f"'{type(callable_func).__name__}' object is not callable")
 
     def _execute_subscript(self, subscript: ast.Subscript):
         index = self._execute_ast(subscript.slice)

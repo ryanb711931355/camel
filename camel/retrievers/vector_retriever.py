@@ -140,6 +140,28 @@ class VectorRetriever(BaseRetriever):
                         filename=metadata_filename,
                     )
                 ]
+        elif isinstance(content, Element):
+            elements = [content]
+        elif isinstance(content, str):
+            # Check if the content is URL
+            parsed_url = urlparse(content)
+            is_url = all([parsed_url.scheme, parsed_url.netloc])
+            if is_url or os.path.exists(content):
+                elements = (
+                    self.uio.parse_file_or_url(
+                        input_path=content,
+                        metadata_filename=metadata_filename,
+                        **kwargs,
+                    )
+                    or []
+                )
+            else:
+                elements = [
+                    self.uio.create_element_from_text(
+                        text=content,
+                        filename=metadata_filename,
+                    )
+                ]
 
         if not elements:
             warnings.warn(

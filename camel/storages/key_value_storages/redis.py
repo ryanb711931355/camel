@@ -53,6 +53,66 @@ class RedisStorage(BaseKeyValueStorage):
         """
         try:
             import redis.asyncio as aredis
+            from redis.asyncio import Redis as AsyncRedis
+        except ImportError:
+            raise ImportError(
+                "The `redis` library with async support is required. "
+                "Please install it using `pip install redis`."
+            )
+
+        self._sid = sid
+        self._url = url
+        self._kwargs = kwargs
+        self._loop = loop
+        self._client: Optional[AsyncRedis] = None
+
+    def __enter__(self) -> "RedisStorage":
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        self.close()
+
+    def close(self) -> None:
+        if self._client:
+            self._client.close()
+
+    def _create_client(self) -> AsyncRedis:
+        return AsyncRedis.from_url(self._url, **self._kwargs)
+
+    @property
+    def client(self) -> AsyncRedis:
+        if self._client is None:
+            self._client = self._create_client()
+        return self._client
+
+    def save(self, key: str, value: Any) -> None:
+        self.client.set(key, pickle.dumps(value))
+
+    def load(self, key: str) -> Any:
+        data = self.client.get(key)
+        if data is None:
+            return None
+        return pickle.loads(data)
+
+    def clear(self) -> None:
+        self.client.flushdb()
+
+    async def _async_save(self, key: str, value: Any) -> None:
+        await self.client.set(key, pickle.dumps(value))
+
+    async def _async_load(self, key: str) -> Any:
+        data = await self.client.get(key)
+        if data is None:
+            return None
+        return pickle.loads(data)
+
+    async def _async_clear(self) -> None:
+        await self.client.flushdb()
+
+    def _run_async(self, coro: Any) -> Any:
+        if self._loop is None:
+            self._loop = asyncio.get_event_loop()
+        return self._loop.run_until_complete(coro)
         except ImportError as exc:
             logger.error(
                 "Please install `redis` first. You can install it by "

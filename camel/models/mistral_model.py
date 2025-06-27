@@ -207,9 +207,10 @@ class MistralModel(BaseModelBackend):
                     else [tool_calls]
                 )
                 for tool_call in tool_calls_list:
+                    function_info = tool_call.get("function", {})
                     mistral_function_call = FunctionCall(
-                        name=tool_call["function"].get("name"),  # type: ignore[attr-defined]
-                        arguments=tool_call["function"].get("arguments"),  # type: ignore[attr-defined]
+                        name=function_info.get("name"),
+                        arguments=function_info.get("arguments"),
                     )
 
             tool_calls = None
@@ -219,25 +220,25 @@ class MistralModel(BaseModelBackend):
                 ]
 
             if role == "user":
-                new_messages.append(UserMessage(content=content))  # type: ignore[arg-type]
+                new_messages.append(UserMessage(content=content))
             elif role == "assistant":
                 new_messages.append(
-                    AssistantMessage(content=content, tool_calls=tool_calls)  # type: ignore[arg-type]
+                    AssistantMessage(content=content, tool_calls=tool_calls)
                 )
             elif role == "system":
-                new_messages.append(SystemMessage(content=content))  # type: ignore[arg-type]
+                new_messages.append(SystemMessage(content=content))
             elif role in {"tool", "function"}:
                 new_messages.append(
                     ToolMessage(
-                        content=content,  # type: ignore[arg-type]
-                        tool_call_id=tool_call_id,  # type: ignore[arg-type]
-                        name=msg.get("name"),  # type: ignore[arg-type]
+                        content=content,
+                        tool_call_id=tool_call_id,
+                        name=msg.get("name"),
                     )
                 )
             else:
                 raise ValueError(f"Unsupported message role: {role}")
 
-        return new_messages  # type: ignore[return-value]
+        return new_messages
 
     @property
     def token_counter(self) -> BaseTokenCounter:

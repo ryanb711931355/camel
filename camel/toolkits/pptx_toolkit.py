@@ -20,9 +20,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
-    from pptx import presentation
-    from pptx.slide import Slide
-    from pptx.text.text import TextFrame
+    try:
+        from pptx import presentation
+        from pptx.slide import Slide
+        from pptx.text.text import TextFrame
+    except ImportError:
+        pass
 
 from camel.logger import get_logger
 from camel.toolkits.base import BaseToolkit
@@ -122,7 +125,10 @@ class PPTXToolkit(BaseToolkit):
             set_color_to_white (bool): Whether to set the color to white.
                 (default: :obj:`False`)
         """
-        from pptx.dml.color import RGBColor
+        try:
+            from pptx.dml.color import RGBColor
+        except ImportError:
+            RGBColor = None
 
         matches = list(BOLD_ITALICS_PATTERN.finditer(text))
         last_index = 0
@@ -132,20 +138,20 @@ class PPTXToolkit(BaseToolkit):
             if start > last_index:
                 run = frame_paragraph.add_run()
                 run.text = text[last_index:start]
-                if set_color_to_white:
+                if set_color_to_white and RGBColor:
                     run.font.color.rgb = RGBColor(255, 255, 255)
 
             if match.group(2):  # Bold
                 run = frame_paragraph.add_run()
                 run.text = match.group(2)
                 run.font.bold = True
-                if set_color_to_white:
+                if set_color_to_white and RGBColor:
                     run.font.color.rgb = RGBColor(255, 255, 255)
             elif match.group(3):  # Italics
                 run = frame_paragraph.add_run()
                 run.text = match.group(3)
                 run.font.italic = True
-                if set_color_to_white:
+                if set_color_to_white and RGBColor:
                     run.font.color.rgb = RGBColor(255, 255, 255)
 
             last_index = end
@@ -153,7 +159,7 @@ class PPTXToolkit(BaseToolkit):
         if last_index < len(text):
             run = frame_paragraph.add_run()
             run.text = text[last_index:]
-            if set_color_to_white:
+            if set_color_to_white and RGBColor:
                 run.font.color.rgb = RGBColor(255, 255, 255)
 
     def _add_bulleted_items(
