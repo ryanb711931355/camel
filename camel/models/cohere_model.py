@@ -326,7 +326,7 @@ class CohereModel(BaseModelBackend):
                 tags=["CAMEL-AI", str(self.model_type)],
             )
 
-        from cohere.core.api_error import ApiError
+        from cohere.core.api_error import ApiError  # type: ignore
 
         request_config = self._prepare_request(
             messages, response_format, tools
@@ -407,7 +407,7 @@ class CohereModel(BaseModelBackend):
                 tags=["CAMEL-AI", str(self.model_type)],
             )
 
-        from cohere.core.api_error import ApiError
+        from cohere.core.api_error import ApiError  # type: ignore
 
         request_config = self._prepare_request(
             messages, response_format, tools

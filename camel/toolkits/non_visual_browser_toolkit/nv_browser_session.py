@@ -28,7 +28,7 @@ if TYPE_CHECKING:
         BrowserContext,
         Page,
         Playwright,
-    )
+    )  # type: ignore[import-not-found]
 
 
 logger = get_logger(__name__)

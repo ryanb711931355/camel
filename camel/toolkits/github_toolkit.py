@@ -52,8 +52,8 @@ class GithubToolkit(BaseToolkit):
                 `get_github_access_token` method.
         """
         super().__init__(timeout=timeout)
+        from github import Github
         from github.Auth import Token
-        from github.MainClass import Github
 
         if access_token is None:
             access_token = self.get_github_access_token()
@@ -113,6 +113,7 @@ class GithubToolkit(BaseToolkit):
         repo = self.github.get_repo(repo_name)
         default_branch = repo.get_branch(repo.default_branch)
         from github.GithubException import GithubException
+        from github.ContentFile import ContentFile
 
         try:
             repo.create_git_ref(
@@ -129,8 +130,6 @@ class GithubToolkit(BaseToolkit):
                 raise
 
         file = repo.get_contents(file_path)
-
-        from github.ContentFile import ContentFile
 
         if isinstance(file, ContentFile):
             repo.update_file(
@@ -298,9 +297,7 @@ class GithubToolkit(BaseToolkit):
         files: List[str] = []
 
         # Retrieves all contents of the current directory
-        contents: Union[List[ContentFile], ContentFile] = repo.get_contents(
-            path
-        )
+        contents = repo.get_contents(path)
 
         if isinstance(contents, ContentFile):
             files.append(contents.path)

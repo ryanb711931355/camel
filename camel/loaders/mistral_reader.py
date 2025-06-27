@@ -15,7 +15,10 @@ import os
 from typing import TYPE_CHECKING, List, Optional
 
 if TYPE_CHECKING:
-    from mistralai.models import OCRResponse
+    try:
+        from mistralai.models import OCRResponse
+    except ImportError:
+        pass
 
 from camel.logger import get_logger
 from camel.utils import api_keys_required
