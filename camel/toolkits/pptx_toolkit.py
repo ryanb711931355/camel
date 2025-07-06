@@ -669,6 +669,7 @@ class PPTXToolkit(BaseToolkit):
         """
         import pptx
         from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
+        from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
         from pptx.util import Inches, Pt
 
         steps = slide_json['bullet_points']

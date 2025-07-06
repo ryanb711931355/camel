@@ -196,7 +196,7 @@ def test_chat_agent_step_with_structure_response(step_call_count=3):
 
     class JokeResponse(BaseModel):
         joke: str = Field(description="a joke")
-        funny_level: str = Field(description="Funny level, from 1 to 10")
+        funny_level: int = Field(description="Funny level, from 1 to 10")
 
     user_msg = BaseMessage.make_user_message(
         role_name="User",
@@ -205,10 +205,9 @@ def test_chat_agent_step_with_structure_response(step_call_count=3):
 
     model_backend_rsp_tool = deepcopy(model_backend_rsp_base)
 
-    model_backend_rsp_tool.choices[0].message.content = '{ \
-        "joke":"What do you call fake spaghetti? An impasta!", \
-        "funny_level":"6" \
-    }'
+    model_backend_rsp_tool.choices[0].message.content = (
+        '{ "joke":"What do you call fake spaghetti? An impasta!", "funny_level":"6" }'
+    )
     model_backend_rsp_tool.choices[0].message.tool_calls = []
     model_backend_rsp_tool.choices[0].message.parsed = JokeResponse(
         joke="What do you call fake spaghetti? An impasta!", funny_level='6'
@@ -816,7 +815,7 @@ def test_set_multiple_output_language():
 
 
 @pytest.mark.model_backend
-def test_tool_calling_sync(step_call_count=3):
+def test_tool_calling_sync(step_call_count: int = 3) -> None:
     system_message = BaseMessage(
         role_name="assistant",
         role_type=RoleType.ASSISTANT,
@@ -981,7 +980,7 @@ def test_tool_calling_sync(step_call_count=3):
 
 @pytest.mark.model_backend
 @pytest.mark.asyncio
-async def test_tool_calling_math_async(step_call_count=3):
+async def test_tool_calling_math_async(step_call_count: int = 3) -> None:
     system_message = BaseMessage(
         role_name="assistant",
         role_type=RoleType.ASSISTANT,

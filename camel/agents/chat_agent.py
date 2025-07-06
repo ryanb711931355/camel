@@ -2403,7 +2403,6 @@ class ChatAgent(BaseAgent):
         args = tool_call_request.args
         tool_call_id = tool_call_request.tool_call_id
         tool = self._internal_tools[func_name]
-        import asyncio
 
         try:
             # Try different invocation paths in order of preference

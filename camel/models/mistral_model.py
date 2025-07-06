@@ -179,6 +179,7 @@ class MistralModel(BaseModelBackend):
         messages: List[OpenAIMessage],
     ) -> List["Messages"]:
         import uuid
+        from typing import Any, Dict, List
 
         from mistralai.models import (
             AssistantMessage,
@@ -208,8 +209,8 @@ class MistralModel(BaseModelBackend):
                 )
                 for tool_call in tool_calls_list:
                     mistral_function_call = FunctionCall(
-                        name=tool_call["function"].get("name"),  # type: ignore[attr-defined]
-                        arguments=tool_call["function"].get("arguments"),  # type: ignore[attr-defined]
+                        name=(tool_call.get("function") or {}).get("name"),
+                        arguments=(tool_call.get("function") or {}).get("arguments"),
                     )
 
             tool_calls = None

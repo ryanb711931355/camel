@@ -541,7 +541,7 @@ class MCPClient:
         r"""Check if the client is currently connected."""
         return self._session is not None
 
-    async def list_mcp_tools(self):
+    async def list_mcp_tools(self) -> Union[ListToolsResult, str]:
         r"""Retrieves the list of available tools from the connected MCP
         server.
 
@@ -582,8 +582,8 @@ class MCPClient:
         """
         func_name = mcp_tool.name
         func_desc = mcp_tool.description or "No description provided."
-        parameters_schema = mcp_tool.inputSchema.get("properties", {})
-        required_params = mcp_tool.inputSchema.get("required", [])
+        parameters_schema = mcp_tool.inputSchema.get("properties", {})  # type: ignore[union-attr]
+        required_params = mcp_tool.inputSchema.get("required", [])  # type: ignore[union-attr]
 
         type_map = {
             "string": str,

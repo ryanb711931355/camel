@@ -95,10 +95,10 @@ class VisionLanguageEmbedding(BaseEmbedding[Union[str, Image.Image]]):
             raise ValueError("Input objs list is empty.")
 
         image_processor_kwargs: Optional[dict] = kwargs.get(
-            'image_processor_kwargs', {}
+            "image_processor_kwargs", {}
         )
-        tokenizer_kwargs: Optional[dict] = kwargs.get('tokenizer_kwargs', {})
-        model_kwargs: Optional[dict] = kwargs.get('model_kwargs', {})
+        tokenizer_kwargs: Optional[dict] = kwargs.get("tokenizer_kwargs", {})
+        model_kwargs: Optional[dict] = kwargs.get("model_kwargs", {})
 
         result_list = []
         for obj in objs:

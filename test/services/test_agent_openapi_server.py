@@ -156,13 +156,13 @@ def test_parse_input_message_for_step_string():
     assert result.role_name == "User"
 
 
+class TestResponseFormat(BaseModel):
+    message: str
+    status: int
+
+
 def test_resolve_response_format_for_step():
     r"""Tests response format resolution with valid and invalid names."""
-
-    # Create a dummy response format for testing
-    class TestResponseFormat(BaseModel):
-        message: str
-        status: int
 
     # Server with registered response format
     server = ChatAgentOpenAPIServer(

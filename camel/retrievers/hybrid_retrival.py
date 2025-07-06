@@ -156,14 +156,14 @@ class HybridRetriever(BaseRetriever):
         top_k: int = 20,
         vector_weight: float = 0.8,
         bm25_weight: float = 0.2,
-        rank_smoothing_factor: int = 60,
+        rank_smoothing_factor: float = 60,
         vector_retriever_top_k: int = 50,
         vector_retriever_similarity_threshold: float = 0.5,
         bm25_retriever_top_k: int = 50,
         return_detailed_info: bool = False,
     ) -> Union[
-        dict[str, Sequence[Collection[str]]],
-        dict[str, Sequence[Union[str, float]]],
+        Dict[str, Sequence[Collection[str]]],
+        Dict[str, Sequence[Union[str, float]]],
     ]:
         r"""Executes a hybrid retrieval query using both vector and BM25
         retrievers.
