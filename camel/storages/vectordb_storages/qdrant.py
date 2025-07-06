@@ -251,7 +251,7 @@ class QdrantStorage(BaseVectorStorage):
             else None,
             "vector_count": collection_info.points_count,
             "status": collection_info.status,
-            "vectors_count": collection_info.vectors_count,
+            "vectors_count": getattr(collection_info, "vectors_count", None),
             "config": collection_info.config,
         }
 
@@ -302,9 +302,11 @@ class QdrantStorage(BaseVectorStorage):
         Raises:
             RuntimeError: If there is an error during the update process.
         """
+        from uuid import UUID
+
         from qdrant_client.http.models import PointIdsList, UpdateStatus
 
-        points = cast(List[Union[str, int]], ids)
+        points = cast(List[Union[int, str, UUID]], ids)
 
         op_info = self._client.set_payload(
             collection_name=self.collection_name,
@@ -373,10 +375,12 @@ class QdrantStorage(BaseVectorStorage):
             )
 
         if ids:
+            from uuid import UUID
+
             op_info = self._client.delete(
                 collection_name=self.collection_name,
                 points_selector=PointIdsList(
-                    points=cast(List[Union[int, str]], ids)
+                    points=cast(List[Union[int, str, UUID]], ids)
                 ),
                 **kwargs,
             )

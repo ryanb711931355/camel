@@ -2060,11 +2060,15 @@ class Workforce(BaseNode):
 
         # Determine detailed failure information
         if is_task_result_insufficient(task):
-            failure_reason = "Worker returned unhelpful "
-            f"response: {task.result[:100] if task.result else ''}..."
+            failure_reason = (
+                "Worker returned unhelpful "
+                f"response: {task.result[:100] if task.result else ''}..."
+            )
         else:
-            failure_reason = "Task marked as failed despite "
-            f"having result: {(task.result or '')[:100]}..."
+            failure_reason = (
+                "Task marked as failed despite "
+                f"having result: {(task.result or '')[:100]}..."
+            )
 
         # Add context about the worker and task
         worker_id = task.assigned_worker_id or "unknown"
@@ -2775,7 +2779,7 @@ class Workforce(BaseNode):
         Returns:
             FastMCP: An MCP server instance that can be run.
         """
-        from mcp.server.fastmcp import FastMCP
+        from mcp.server.fastmcp import FastMCP  # type: ignore[import-not-found]
 
         # Combine dependencies
         all_dependencies = ["camel-ai[all]"]

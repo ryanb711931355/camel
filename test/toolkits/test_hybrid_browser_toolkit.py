@@ -440,8 +440,7 @@ class TestHybridBrowserToolkit:
         ):
             # Create toolkit with custom default URL
             toolkit = HybridBrowserToolkit(
-                headless=True, 
-                default_start_url=TEST_URL
+                headless=True, default_start_url=TEST_URL
             )
             toolkit._session = mock_session
 
@@ -1115,7 +1114,9 @@ class TestHybridBrowserToolkit:
             # Mock asyncio.wait_for to simulate timeout
             import asyncio
 
-            with patch('asyncio.wait_for', side_effect=asyncio.TimeoutError()):
+            with patch(
+                'asyncio.wait_for', side_effect=asyncio.TimeoutError()
+            ):
                 result = await toolkit.wait_user(timeout_sec=1.0)
 
                 assert (
