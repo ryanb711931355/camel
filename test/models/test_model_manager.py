@@ -52,7 +52,7 @@ def test_model_manager(
         assert type(models) is List[BaseModelBackend]
     messages: List = []
     for _ in range(calls_count):
-        msg = "message"
+        msg = {"role": "system", "content": "message"}
         if TYPE_CHECKING:
             assert type(msg) is ChatCompletionSystemMessageParam
         messages.append(msg)

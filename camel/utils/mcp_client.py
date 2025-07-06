@@ -46,7 +46,7 @@ except ImportError:
         headers: Optional[Dict[str, str]] = None,
         timeout: Optional[httpx.Timeout] = None,
         auth: Optional[httpx.Auth] = None,
-    ) -> httpx.AsyncClient:
+    ) -> "httpx.AsyncClient":
         """Fallback implementation if not available."""
         kwargs: Dict[str, Any] = {"follow_redirects": True}
 

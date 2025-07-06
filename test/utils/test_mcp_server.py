@@ -16,13 +16,13 @@ import sys
 from typing import Literal
 
 import pytest
-from mcp.server import FastMCP
+from mcp.server import FastMCP  # type: ignore
 
 from camel.toolkits.mcp_toolkit import MCPClient
-from camel.utils import MCPServer
+from camel.utils import MCPServer  # type: ignore
 
 
-@MCPServer(
+@MCPServer(  # type: ignore
     server_name="TextProcessorForMCP",
     function_names=["reverse_text", "async_word_count"],
 )
@@ -91,7 +91,7 @@ def test_tool_schema():
 @pytest.mark.asyncio
 async def test_async_word_count():
     processor = TextProcessorForMCP()
-    async with MCPClient(
+    async with MCPClient(  # type: ignore
         config={
             "command": sys.executable,
             "args": [__file__, "--server"],
