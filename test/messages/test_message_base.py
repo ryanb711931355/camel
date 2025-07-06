@@ -139,7 +139,7 @@ def test_base_message():
 
 
 @pytest.mark.model_backend
-def test_roleplay_sharegpt_conversion():
+def test_roleplay_sharegpt_conversion() -> None:
     model = ModelFactory.create(
         model_platform=ModelPlatformType.OPENAI,
         model_type=ModelType.GPT_4O_MINI,
@@ -163,8 +163,8 @@ def test_roleplay_sharegpt_conversion():
     records: List[ContextRecord] = (
         role_playing.assistant_agent.memory.retrieve()
     )
-    original_messages = []
-    sharegpt_msgs = []
+    original_messages: List[BaseMessage] = []
+    sharegpt_msgs: List[Dict[str, Any]] = []
 
     for record in records:
         message = record.memory_record.message
@@ -173,7 +173,7 @@ def test_roleplay_sharegpt_conversion():
         original_messages.append(message)
         sharegpt_msgs.append(message.to_sharegpt())
 
-    converted_back = []
+    converted_back: List[BaseMessage] = []
     for msg in sharegpt_msgs:
         converted_back.append(BaseMessage.from_sharegpt(msg))
 

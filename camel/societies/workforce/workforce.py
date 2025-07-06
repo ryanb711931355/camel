@@ -2755,7 +2755,7 @@ class Workforce(BaseNode):
         dependencies: Optional[List[str]] = None,
         host: str = "localhost",
         port: int = 8001,
-    ):
+    ) -> Any:
         r"""Expose this Workforce as an MCP server.
 
         Args:
@@ -2773,9 +2773,15 @@ class Workforce(BaseNode):
                 (default: :obj:`8001`)
 
         Returns:
-            FastMCP: An MCP server instance that can be run.
+            Any: An MCP server instance that can be run.
         """
-        from mcp.server.fastmcp import FastMCP
+        try:
+            from mcp.server.fastmcp import FastMCP
+        except ImportError:
+            raise ImportError(
+                "The 'mcp' package is required for MCP functionality. "
+                "Please install it with: pip install mcp"
+            )
 
         # Combine dependencies
         all_dependencies = ["camel-ai[all]"]
@@ -2794,8 +2800,10 @@ class Workforce(BaseNode):
 
         # Define functions first
         async def process_task(
-            task_content, task_id=None, additional_info=None
-        ):
+            task_content: str,
+            task_id: Optional[str] = None,
+            additional_info: Optional[Dict[str, Any]] = None,
+        ) -> Dict[str, Any]:
             r"""Process a task using the workforce.
 
             Args:
@@ -2852,7 +2860,7 @@ class Workforce(BaseNode):
                 }
 
         # Reset tool
-        def reset():
+        def reset() -> Dict[str, str]:
             r"""Reset the workforce to its initial state.
 
             Clears all pending tasks, resets all child nodes, and returns
@@ -2877,7 +2885,7 @@ class Workforce(BaseNode):
                 return {"status": "error", "message": str(e)}
 
         # Workforce info resource and tool
-        def get_workforce_info():
+        def get_workforce_info() -> Dict[str, Any]:
             r"""Get comprehensive information about the workforce.
 
             Retrieves the current state and configuration of the workforce
@@ -2915,7 +2923,7 @@ class Workforce(BaseNode):
             return info
 
         # Children info resource and tool
-        def get_children_info():
+        def get_children_info() -> List[Dict[str, Any]]:
             r"""Get information about all child nodes in the workforce.
 
             Retrieves comprehensive information about each child worker
@@ -2973,11 +2981,11 @@ class Workforce(BaseNode):
 
         # Add single agent worker
         def add_single_agent_worker(
-            description,
-            system_message=None,
-            role_name="Assistant",
-            agent_kwargs=None,
-        ):
+            description: str,
+            system_message: Optional[str] = None,
+            role_name: str = "Assistant",
+            agent_kwargs: Optional[Dict[str, Any]] = None,
+        ) -> Dict[str, str]:
             r"""Add a single agent worker to the workforce.
 
             Creates and adds a new SingleAgentWorker to the workforce with
@@ -3036,14 +3044,14 @@ class Workforce(BaseNode):
 
         # Add role playing worker
         def add_role_playing_worker(
-            description,
-            assistant_role_name,
-            user_role_name,
-            chat_turn_limit=20,
-            assistant_agent_kwargs=None,
-            user_agent_kwargs=None,
-            summarize_agent_kwargs=None,
-        ):
+            description: str,
+            assistant_role_name: str,
+            user_role_name: str,
+            chat_turn_limit: int = 20,
+            assistant_agent_kwargs: Optional[Dict[str, Any]] = None,
+            user_agent_kwargs: Optional[Dict[str, Any]] = None,
+            summarize_agent_kwargs: Optional[Dict[str, Any]] = None,
+        ) -> Dict[str, str]:
             r"""Add a role playing worker to the workforce.
 
             Creates and adds a new RolePlayingWorker to the workforce that
