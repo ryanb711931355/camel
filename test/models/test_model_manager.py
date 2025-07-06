@@ -45,7 +45,7 @@ def test_model_manager(
     models = (
         [Mock(run=Mock()) for _ in range(models_number)]
         if models_number > 1
-        else Mock()
+        else [Mock()]
     )
 
     if TYPE_CHECKING:

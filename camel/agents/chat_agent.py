@@ -2288,6 +2288,7 @@ class ChatAgent(BaseAgent):
                     tool_name=tool_name, args=args, tool_call_id=tool_call_id
                 )
                 tool_call_requests.append(tool_call_request)
+                break
 
         return ModelResponse(
             response=response,
@@ -2399,11 +2400,12 @@ class ChatAgent(BaseAgent):
         self,
         tool_call_request: ToolCallRequest,
     ) -> ToolCallingRecord:
+        import asyncio
+
         func_name = tool_call_request.tool_name
         args = tool_call_request.args
         tool_call_id = tool_call_request.tool_call_id
         tool = self._internal_tools[func_name]
-        import asyncio
 
         try:
             # Try different invocation paths in order of preference
@@ -3899,7 +3901,7 @@ class ChatAgent(BaseAgent):
             f"ChatAgent({self.role_name}, {self.role_type}, {self.model_type})"
         )
 
-    @dependencies_required("mcp")
+    @dependencies_required("mcp")  # type: ignore[call-arg]
     def to_mcp(
         self,
         name: str = "CAMEL-ChatAgent",
@@ -3926,7 +3928,7 @@ class ChatAgent(BaseAgent):
         Returns:
             FastMCP: An MCP server instance that can be run.
         """
-        from mcp.server.fastmcp import FastMCP
+        from mcp.server.fastmcp import FastMCP  # type: ignore[import-untyped]
 
         # Combine dependencies
         all_dependencies = ["camel-ai[all]"]

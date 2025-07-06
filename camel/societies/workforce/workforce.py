@@ -2775,14 +2775,14 @@ class Workforce(BaseNode):
         Returns:
             FastMCP: An MCP server instance that can be run.
         """
-        from mcp.server.fastmcp import FastMCP
+        from mcp.server.fastmcp import FastMCP  # type: ignore
 
         # Combine dependencies
         all_dependencies = ["camel-ai[all]"]
         if dependencies:
             all_dependencies.extend(dependencies)
 
-        mcp_server = FastMCP(
+        mcp_server = FastMCP(  # type: ignore
             name,
             dependencies=all_dependencies,
             host=host,
@@ -2794,7 +2794,7 @@ class Workforce(BaseNode):
 
         # Define functions first
         async def process_task(
-            task_content, task_id=None, additional_info=None
+            task_content: str, task_id: str | None = None, additional_info: dict[str, Any] | None = None
         ):
             r"""Process a task using the workforce.
 
@@ -2957,7 +2957,7 @@ class Workforce(BaseNode):
                 }
 
                 if isinstance(child, SingleAgentWorker):
-                    child_info["tools"] = list(child.worker.tool_dict.keys())
+                    child_info["tools"] = list(child.worker.tool_dict.keys()) if child.worker.tool_dict else []
                     child_info["role_name"] = child.worker.role_name
                 elif isinstance(child, RolePlayingWorker):
                     child_info["assistant_role"] = child.assistant_role_name

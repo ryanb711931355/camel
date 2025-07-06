@@ -401,9 +401,10 @@ class InternalPythonInterpreter(BaseInterpreter):
 
         # Todo deal with args
         args = [self._execute_ast(arg) for arg in call.args]
-        kwargs = {
+        kwargs: dict[str, Any] = {
             keyword.arg: self._execute_ast(keyword.value)
             for keyword in call.keywords
+            if keyword.arg is not None
         }
         return callable_func(*args, **kwargs)
 
