@@ -122,8 +122,7 @@ async def test_async_step_route_with_tool():
             json={
                 "agent_id": "demo",
                 "tools_names": ["search_wiki"],
-                "system_message": "You are a helpful assistant"
-                " with wiki access.",
+                "system_message": "You are a helpful assistant with wiki access.",
             },
         )
         assert resp.status_code == 200
@@ -156,7 +155,7 @@ def test_parse_input_message_for_step_string():
     assert result.role_name == "User"
 
 
-def test_resolve_response_format_for_step():
+def test_resolve_response_format_for_step() -> None:
     r"""Tests response format resolution with valid and invalid names."""
 
     # Create a dummy response format for testing

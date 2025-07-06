@@ -249,8 +249,6 @@ class InternalPythonInterpreter(BaseInterpreter):
             if self.raise_error:
                 raise InterpreterError(f"Syntax error in code: {e}")
             else:
-                import traceback
-
                 return traceback.format_exc()
 
         result = None
@@ -269,8 +267,6 @@ class InternalPythonInterpreter(BaseInterpreter):
                 if self.raise_error:
                     raise InterpreterError(msg)
                 else:
-                    import traceback
-
                     return traceback.format_exc()
             if line_result is not None:
                 result = line_result
@@ -405,12 +401,14 @@ class InternalPythonInterpreter(BaseInterpreter):
             keyword.arg: self._execute_ast(keyword.value)
             for keyword in call.keywords
         }
+        if not callable(callable_func):
+            raise InterpreterError(f"{callable_func} is not callable.")
         return callable_func(*args, **kwargs)
 
     def _execute_subscript(self, subscript: ast.Subscript):
         index = self._execute_ast(subscript.slice)
         value = self._execute_ast(subscript.value)
-        if not isinstance(subscript.ctx, ast.Load):
+        if not isinstance(subscript.ctx, (ast.Load, ast.Store)):
             raise InterpreterError(
                 f"{subscript.ctx.__class__.__name__} is not supported for "
                 "subscript."
@@ -430,15 +428,14 @@ class InternalPythonInterpreter(BaseInterpreter):
         raise InterpreterError(f"Could not index {value} with '{index}'.")
 
     def _execute_name(self, name: ast.Name):
+        if not isinstance(name.ctx, (ast.Load, ast.Store)):
+            raise InterpreterError(f"{name.ctx} is not supported.")
         if isinstance(name.ctx, ast.Store):
             return name.id
-        elif isinstance(name.ctx, ast.Load):
-            return self._get_value_from_state(name.id)
-        else:
-            raise InterpreterError(f"{name.ctx} is not supported.")
+        return self._get_value_from_state(name.id)
 
     def _execute_condition(self, condition: ast.Compare):
-        if len(condition.ops) > 1:
+        if len(condition.ops) != 1:
             raise InterpreterError(
                 "Cannot evaluate conditions with multiple operators"
             )
@@ -482,7 +479,7 @@ class InternalPythonInterpreter(BaseInterpreter):
                 line_result = self._execute_ast(line)
                 if line_result is not None:
                     result = line_result
-        else:
+        elif if_statement.orelse:
             for line in if_statement.orelse:
                 line_result = self._execute_ast(line)
                 if line_result is not None:
@@ -504,7 +501,7 @@ class InternalPythonInterpreter(BaseInterpreter):
         for module in import_module.names:
             self._validate_import(module.name)
             alias = module.asname or module.name
-            self.state[alias] = importlib.import_module(module.name)
+            self.state[alias] = typing.cast(Any, importlib.import_module(module.name))
 
     def _execute_import_from(self, import_from: ast.ImportFrom):
         if import_from.module is None:
@@ -514,7 +511,7 @@ class InternalPythonInterpreter(BaseInterpreter):
             self._validate_import(full_name)
             imported_module = importlib.import_module(import_from.module)
             alias = import_name.asname or import_name.name
-            self.state[alias] = getattr(imported_module, import_name.name)
+            self.state[alias] = typing.cast(Any, getattr(imported_module, import_name.name))
 
     def _validate_import(self, full_name: str):
         tmp_name = ""
@@ -605,6 +602,6 @@ class InternalPythonInterpreter(BaseInterpreter):
             )
             stdout, stderr = proc.communicate()
 
-            return stdout, stderr
+            return str(stdout), str(stderr)
         except Exception as e:
             raise InterpreterError(f"Error executing command: {e}")

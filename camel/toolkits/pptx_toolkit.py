@@ -516,13 +516,17 @@ class PPTXToolkit(BaseToolkit):
             bool: True if the slide has been processed.
         """
         from io import BytesIO
+        from typing import Any, Dict, List, Optional, Tuple
 
         import requests
+        from pptx import Presentation
+        from pptx.enum.text import PP_ALIGN
+        from pptx.util import Inches
 
         img_keywords = slide_json.get('img_keywords', '').strip()
         slide = presentation.slide_layouts[8]  # Picture with Caption
         slide = presentation.slides.add_slide(slide)
-        placeholders = None
+        placeholders: Optional[List[Tuple[int, str]]] = None
 
         title_placeholder = slide.shapes.title  # type: ignore[attr-defined]
         title_placeholder.text = self._remove_slide_number_from_heading(

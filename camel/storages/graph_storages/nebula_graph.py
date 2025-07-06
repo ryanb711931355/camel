@@ -18,9 +18,7 @@ import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 from camel.storages.graph_storages.base import BaseGraphStorage
-from camel.storages.graph_storages.graph_element import (
-    GraphElement,
-)
+from camel.storages.graph_storages.graph_element import GraphElement
 from camel.utils.commons import dependencies_required
 
 logger = logging.getLogger(__name__)
@@ -43,7 +41,13 @@ RETRY_DELAY = 3
 class NebulaGraph(BaseGraphStorage):
     @dependencies_required('nebula3')
     def __init__(
-        self, host, username, password, space, port=9669, timeout=10000
+        self,
+        host: str,
+        username: str,
+        password: str,
+        space: str,
+        port: int = 9669,
+        timeout: int = 10000,
     ):
         r"""Initializes the NebulaGraph client.
 

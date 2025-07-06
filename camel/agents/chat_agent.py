@@ -2403,7 +2403,6 @@ class ChatAgent(BaseAgent):
         args = tool_call_request.args
         tool_call_id = tool_call_request.tool_call_id
         tool = self._internal_tools[func_name]
-        import asyncio
 
         try:
             # Try different invocation paths in order of preference
@@ -3926,7 +3925,13 @@ class ChatAgent(BaseAgent):
         Returns:
             FastMCP: An MCP server instance that can be run.
         """
-        from mcp.server.fastmcp import FastMCP
+        try:
+            from mcp.server.fastmcp import FastMCP
+        except ImportError:
+            raise ImportError(
+                "The MCP server requires the `mcp` package. "
+                "Install it with `pip install mcp`."
+            )
 
         # Combine dependencies
         all_dependencies = ["camel-ai[all]"]
@@ -3941,7 +3946,7 @@ class ChatAgent(BaseAgent):
         )
 
         # Store agent reference
-        agent_instance = self
+        agent_instance: ChatAgent = self
 
         # Define functions first
         async def step(message, response_format=None):

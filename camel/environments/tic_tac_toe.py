@@ -483,7 +483,7 @@ class TicTacToeEnv(MultiStepEnv):
         # Check all win combinations.
         for a, b, c in TicTacToeEnv.WIN_COMBINATIONS:
             if board[a] != " " and board[a] == board[b] == board[c]:
-                return board[a]
+                return Literal["X", "O"](board[a])  # type: ignore[return-value]
         # Check for draw.
         if all(cell != " " for cell in board):
             return "draw"
@@ -498,7 +498,6 @@ class TicTacToeEnv(MultiStepEnv):
         Returns:
             str: A formatted string representation of the board.
         """
-
         # Create a nice formatted board.
         def cell_value(i: int) -> str:
             r"""Get the display value for a cell.

@@ -207,6 +207,10 @@ class MistralModel(BaseModelBackend):
                     else [tool_calls]
                 )
                 for tool_call in tool_calls_list:
+                    if not isinstance(tool_call, dict) or "function" not in tool_call:
+                        raise ValueError(
+                            f"Invalid tool call: {tool_call}. Expected a dict with a 'function' key."
+                        )
                     mistral_function_call = FunctionCall(
                         name=tool_call["function"].get("name"),  # type: ignore[attr-defined]
                         arguments=tool_call["function"].get("arguments"),  # type: ignore[attr-defined]

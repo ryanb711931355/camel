@@ -19,7 +19,7 @@ import pytest
 from mcp.server import FastMCP
 
 from camel.toolkits.mcp_toolkit import MCPClient
-from camel.utils import MCPServer
+from camel.toolkits.mcp_toolkit import MCPServer
 
 
 @MCPServer(
@@ -27,7 +27,7 @@ from camel.utils import MCPServer
     function_names=["reverse_text", "async_word_count"],
 )
 class TextProcessorForMCP:
-    mcp: FastMCP
+    mcp: FastMCP = FastMCP()
 
     def __init__(self):
         pass

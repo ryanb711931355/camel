@@ -16,6 +16,7 @@ from typing import Any, Collection, Dict, List, Optional, Sequence, Union
 from camel.embeddings import BaseEmbedding
 from camel.retrievers import BaseRetriever, BM25Retriever, VectorRetriever
 from camel.storages import BaseVectorStorage
+from camel.types import RetrieverType
 
 
 class HybridRetriever(BaseRetriever):
@@ -165,6 +166,8 @@ class HybridRetriever(BaseRetriever):
         dict[str, Sequence[Collection[str]]],
         dict[str, Sequence[Union[str, float]]],
     ]:
+        if not query:
+            raise ValueError("query cannot be empty.")
         r"""Executes a hybrid retrieval query using both vector and BM25
         retrievers.
 
