@@ -165,7 +165,7 @@ def ragas_calculate_metrics(
             dataset[pred_faithfulness_field], dtype=float
         )
         calculated_metrics["hallucination_auroc"] = auroc(
-            trues_hallucination.tolist(), preds_hallucination.tolist()
+            trues_hallucination.astype(bool).tolist(), preds_hallucination.tolist()
         )
 
     return calculated_metrics

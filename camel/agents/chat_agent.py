@@ -2281,6 +2281,8 @@ class ChatAgent(BaseAgent):
         if tool_calls := response.choices[0].message.tool_calls:
             tool_call_requests = []
             for tool_call in tool_calls:
+                if tool_call.function is None:
+                    continue
                 tool_name = tool_call.function.name
                 tool_call_id = tool_call.id
                 args = json.loads(tool_call.function.arguments)
@@ -2403,7 +2405,6 @@ class ChatAgent(BaseAgent):
         args = tool_call_request.args
         tool_call_id = tool_call_request.tool_call_id
         tool = self._internal_tools[func_name]
-        import asyncio
 
         try:
             # Try different invocation paths in order of preference
@@ -3944,7 +3945,7 @@ class ChatAgent(BaseAgent):
         agent_instance = self
 
         # Define functions first
-        async def step(message, response_format=None):
+        async def step(message: str, response_format: Optional[Dict] = None) -> Dict[str, Any]:
             r"""Execute a single step in the chat session with the agent."""
             format_cls = None
             if response_format:
@@ -3960,13 +3961,13 @@ class ChatAgent(BaseAgent):
             }
 
         # Reset tool
-        def reset():
+        def reset() -> Dict[str, str]:
             r"""Reset the chat agent to its initial state."""
             agent_instance.reset()
             return {"status": "success", "message": "Agent reset successfully"}
 
         # Set language tool
-        def set_output_language(language):
+        def set_output_language(language: str) -> Dict[str, str]:
             r"""Set the output language for the chat agent."""
             agent_instance.output_language = language
             return {
@@ -3975,7 +3976,7 @@ class ChatAgent(BaseAgent):
             }
 
         # Agent info resource and tool
-        def get_agent_info():
+        def get_agent_info() -> Dict[str, Any]:
             r"""Get information about the agent."""
             info = {
                 "agent_id": agent_instance.agent_id,
@@ -3988,7 +3989,7 @@ class ChatAgent(BaseAgent):
             return info
 
         # Chat history resource and tool
-        def get_chat_history():
+        def get_chat_history() -> List[Dict[str, Any]]:
             r"""Get the chat history for the agent."""
             # Convert messages to simple serializable format
             messages = []
@@ -4008,7 +4009,7 @@ class ChatAgent(BaseAgent):
             return messages
 
         # Available tools resource and tool
-        def get_available_tools():
+        def get_available_tools() -> Dict[str, Any]:
             r"""Get a list of available internal tools."""
             tool_info = {}
             for name, tool in agent_instance.tool_dict.items():

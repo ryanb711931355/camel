@@ -160,9 +160,7 @@ def test_roleplay_sharegpt_conversion():
     input_msg = role_playing.init_chat()
     role_playing.step(input_msg)
 
-    records: List[ContextRecord] = (
-        role_playing.assistant_agent.memory.retrieve()
-    )
+    records = role_playing.assistant_agent.memory.retrieve()
     original_messages = []
     sharegpt_msgs = []
 

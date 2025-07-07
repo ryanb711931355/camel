@@ -109,7 +109,7 @@ async def test_structured_scrape_success():
     )
 
     class DummySchema(BaseModel):
-        field: str
+        field: str = ""
 
     with patch.object(
         Crawl4AI, "_run_crawler", new_callable=AsyncMock
@@ -134,7 +134,7 @@ async def test_structured_scrape_failure():
         crawler = Crawl4AI()
 
         class DummySchema(BaseModel):
-            field: str
+            field: str = ""
 
         with pytest.raises(RuntimeError, match="Structured scrape failed"):
             await crawler.structured_scrape(URL, DummySchema)
