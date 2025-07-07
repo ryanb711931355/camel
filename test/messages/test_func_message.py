@@ -65,7 +65,7 @@ def function_result_message() -> FunctionCallingMessage:
 
 def test_assistant_func_message(
     assistant_func_call_message: FunctionCallingMessage,
-):
+) -> None:
     content = "test function message"
 
     assert assistant_func_call_message.func_name == "add"
@@ -85,7 +85,7 @@ def test_assistant_func_message(
 
 def test_function_func_message(
     function_result_message: FunctionCallingMessage,
-):
+) -> None:
     assert function_result_message.func_name == "add"
     assert function_result_message.result == 3
 
@@ -99,7 +99,7 @@ def test_function_func_message(
 
 def test_assistant_func_message_to_openai_tool_message(
     assistant_func_call_message: FunctionCallingMessage,
-):
+) -> None:
     expected_msg_dict: Dict[str, str] = {
         "role": "tool",
         "content": str(None),
@@ -113,7 +113,7 @@ def test_assistant_func_message_to_openai_tool_message(
 
 
 @pytest.mark.model_backend
-def test_roleplay_conversion_with_tools():
+def test_roleplay_conversion_with_tools() -> None:
     tools = MathToolkit().get_tools()
     model = ModelFactory.create(
         model_platform=ModelPlatformType.OPENAI,
@@ -168,7 +168,7 @@ def test_roleplay_conversion_with_tools():
 def test_convert_function_call_and_response_to_from_sharegpt_hermes(
     assistant_func_call_message: FunctionCallingMessage,
     function_result_message: FunctionCallingMessage,
-):
+) -> None:
     sharegpt_function_call = assistant_func_call_message.to_sharegpt()
 
     # Check the function call contains a hermes function call
@@ -194,7 +194,7 @@ def test_convert_function_call_and_response_to_from_sharegpt_hermes(
 
 def test_function_func_message_to_openai_assistant_message(
     function_result_message: FunctionCallingMessage,
-):
+) -> None:
     with pytest.raises(
         ValueError,
         match=(
@@ -205,7 +205,7 @@ def test_function_func_message_to_openai_assistant_message(
         function_result_message.to_openai_assistant_message()
 
 
-def test_masking_in_openai_tool_message():
+def test_masking_in_openai_tool_message() -> None:
     msg = FunctionCallingMessage(
         role_name="assistant",
         role_type=RoleType.ASSISTANT,
@@ -223,7 +223,7 @@ def test_masking_in_openai_tool_message():
     assert openai_msg["content"] == "[MASKED]"
 
 
-def test_masking_in_sharegpt():
+def test_masking_in_sharegpt() -> None:
     msg = FunctionCallingMessage(
         role_name="assistant",
         role_type=RoleType.ASSISTANT,
@@ -239,7 +239,7 @@ def test_masking_in_sharegpt():
     assert sharegpt_msg.value == "[MASKED]"
 
 
-def test_to_dict_includes_mask_output():
+def test_to_dict_includes_mask_output() -> None:
     msg = FunctionCallingMessage(
         role_name="assistant",
         role_type=RoleType.ASSISTANT,

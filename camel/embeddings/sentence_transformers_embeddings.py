@@ -59,14 +59,11 @@ class SentenceTransformerEncoder(BaseEmbedding[str]):
             list[list[float]]: A list that represents the generated embedding
                 as a list of floating-point numbers.
         """
-        from numpy import ndarray
-
         if not objs:
             raise ValueError("Input text list is empty")
         embeddings = self.model.encode(
             objs, normalize_embeddings=True, **kwargs
         )
-        assert isinstance(embeddings, ndarray)
         return embeddings.tolist()
 
     def get_output_dim(self) -> int:

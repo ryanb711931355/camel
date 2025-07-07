@@ -43,8 +43,14 @@ RETRY_DELAY = 3
 class NebulaGraph(BaseGraphStorage):
     @dependencies_required('nebula3')
     def __init__(
-        self, host, username, password, space, port=9669, timeout=10000
-    ):
+        self,
+        host: str,
+        username: str,
+        password: str,
+        space: str,
+        port: int = 9669,
+        timeout: int = 10000,
+    ) -> None:
         r"""Initializes the NebulaGraph client.
 
         Args:
@@ -131,11 +137,12 @@ class NebulaGraph(BaseGraphStorage):
                 )
 
     @property
+    @property
     def get_client(self) -> Any:
         r"""Get the underlying graph storage client."""
         return self.session
 
-    def query(self, query: str) -> "ResultSet":  # type:ignore[override]
+    def query(self, query: str) -> "ResultSet":
         r"""Execute a query on the graph store.
 
         Args:
@@ -163,7 +170,7 @@ class NebulaGraph(BaseGraphStorage):
         """
         # Query all edge types
         result = self.query('SHOW EDGES')
-        rel_types = []
+        rel_types: List[str] = []
 
         # Extract relationship type names
         for row in result.rows():
