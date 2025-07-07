@@ -161,8 +161,8 @@ def test_resolve_response_format_for_step():
 
     # Create a dummy response format for testing
     class TestResponseFormat(BaseModel):
-        message: str
-        status: int
+        message: str = ""
+        status: int = 0
 
     # Server with registered response format
     server = ChatAgentOpenAPIServer(

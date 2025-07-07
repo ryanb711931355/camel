@@ -41,6 +41,7 @@ from pydantic import BaseModel, model_validator
 try:
     from mcp.shared._httpx_utils import create_mcp_http_client
 except ImportError:
+    from typing import Any
 
     def create_mcp_http_client(
         headers: Optional[Dict[str, str]] = None,

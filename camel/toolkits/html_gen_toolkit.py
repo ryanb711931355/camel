@@ -499,7 +499,7 @@ class HtmlGenToolkit(BaseToolkit):
 
         # save to file
         with open(os.path.join(self.workspace, filename), "w") as f:
-            f.write(response.msgs[0].content)
+            f.write(str(response.msgs[0].content))
         result = (
             f"Content successfully written to file: {filename}"
             f"The content is: {response.msgs[0].content}"
@@ -529,7 +529,7 @@ class HtmlGenToolkit(BaseToolkit):
 
         # save to file
         with open(os.path.join(self.workspace, filename), "w") as f:
-            f.write(response.msgs[0].content)
+            f.write(str(response.msgs[0].content))
         result = (
             f"Content successfully written to file: {filename}"
             f"The content is: {response.msgs[0].content}"

@@ -25,9 +25,12 @@ class BaseToolkit(metaclass=AgentOpsMeta):
         timeout (Optional[float]): The timeout for the toolkit.
     """
 
-    from mcp.server import FastMCP
+    try:
+        from mcp.server import FastMCP
+    except ImportError:
+        FastMCP = None  # type: ignore
 
-    mcp: FastMCP
+    mcp: Optional[FastMCP] = None
     timeout: Optional[float] = None
 
     def __init__(self, timeout: Optional[float] = None):

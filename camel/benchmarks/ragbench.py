@@ -158,8 +158,8 @@ def ragas_calculate_metrics(
         )
 
     if "faithfulness" in metrics_to_evaluate and pred_faithfulness_field:
-        trues_hallucination = ~np.array(
-            dataset[ground_truth_faithfulness_field]
+        trues_hallucination = np.array(
+            dataset[ground_truth_faithfulness_field], dtype=bool
         )
         preds_hallucination = 1 - np.array(
             dataset[pred_faithfulness_field], dtype=float
@@ -300,7 +300,9 @@ class RAGBenchBenchmark(BaseBenchmark):
             Dict[str, Optional[float]]: Dictionary of evaluation metrics.
         """
 
-        def context_call(example):
+        def context_call(
+            example: Dict[str, Any],
+        ) -> List[str]:
             retrieved_info = auto_retriever.run_vector_retriever(
                 query=example['question'],
                 contents=example['documents'],

@@ -53,6 +53,17 @@ from camel.types import (
 )
 from camel.utils.async_func import sync_funcs_to_async
 
+# Ensure optional dependencies are available for type checking
+try:
+    import markitdown  # noqa: F401
+except ImportError:
+    pass
+
+try:
+    import mcp  # noqa: F401
+except ImportError:
+    pass
+
 model_backend_rsp_base = ChatCompletion(
     id="mock_response_id",
     choices=[
@@ -183,7 +194,7 @@ def test_chat_agent_stored_messages():
 
 
 @pytest.mark.model_backend
-def test_chat_agent_step_with_structure_response(step_call_count=3):
+def test_chat_agent_step_with_structure_response(step_call_count: int = 3) -> None:
     system_msg = BaseMessage(
         role_name="assistant",
         role_type=RoleType.ASSISTANT,

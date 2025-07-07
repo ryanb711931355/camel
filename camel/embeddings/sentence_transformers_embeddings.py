@@ -67,7 +67,7 @@ class SentenceTransformerEncoder(BaseEmbedding[str]):
             objs, normalize_embeddings=True, **kwargs
         )
         assert isinstance(embeddings, ndarray)
-        return embeddings.tolist()
+        return cast(list[list[float]], embeddings.tolist())
 
     def get_output_dim(self) -> int:
         r"""Returns the output dimension of the embeddings.

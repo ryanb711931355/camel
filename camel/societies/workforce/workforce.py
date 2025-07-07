@@ -2940,10 +2940,16 @@ class Workforce(BaseNode):
         Returns:
             FastMCP: An MCP server instance that can be run.
         """
-        from mcp.server.fastmcp import FastMCP
+        try:
+            from mcp.server.fastmcp import FastMCP
+        except ImportError:
+            raise ImportError(
+                "The `mcp` package is required to use `to_mcp`. "
+                "Install it via `pip install mcp` or `pip install camel-ai[mcp]`."
+            )
 
         # Combine dependencies
-        all_dependencies = ["camel-ai[all]"]
+        all_dependencies: list[str] = ["camel-ai[all]"]
         if dependencies:
             all_dependencies.extend(dependencies)
 

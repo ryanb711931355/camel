@@ -2298,6 +2298,15 @@ class ChatAgent(BaseAgent):
             response_id=response.id or "",
         )
 
+        return ModelResponse(
+            response=response,
+            tool_call_requests=tool_call_requests,
+            output_messages=output_messages,
+            finish_reasons=finish_reasons,
+            usage_dict=usage,
+            response_id=response.id or "",
+        )
+
     def _step_terminate(
         self,
         num_tokens: int,
