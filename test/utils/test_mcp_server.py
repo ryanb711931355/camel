@@ -13,13 +13,13 @@
 # ========= Copyright 2023-2024 @ CAMEL-AI.org. All Rights Reserved. =========
 import asyncio
 import sys
-from typing import Literal
+from typing import Literal, Any
 
 import pytest
-from mcp.server import FastMCP
+from mcp.server.fastmcp import FastMCP
 
 from camel.toolkits.mcp_toolkit import MCPClient
-from camel.utils import MCPServer
+from camel.utils.mcp import MCPServer
 
 
 @MCPServer(
@@ -29,9 +29,12 @@ from camel.utils import MCPServer
 class TextProcessorForMCP:
     mcp: FastMCP
 
-    def __init__(self):
-        pass
+    def __init__(self) -> None:
+        self.mcp = FastMCP("TextProcessor")
+        self.mcp.add_route("/reverse_text", self.reverse_text)
+        self.mcp.add_route("/async_word_count", self.async_word_count)
 
+    @self.mcp.tool()
     def reverse_text(self, text: str) -> str:
         r"""reverse the text. the function is a synchronous function.
 
@@ -62,7 +65,7 @@ class TextProcessorForMCP:
         self.mcp.run(mode)
 
 
-def test_tool_schema():
+def test_tool_schema() -> None:
     processor = TextProcessorForMCP()
     tools = processor.mcp._tool_manager.list_tools()
     tool_functions = {tool.name: tool for tool in tools}
@@ -89,7 +92,7 @@ def test_tool_schema():
 
 
 @pytest.mark.asyncio
-async def test_async_word_count():
+async def test_async_word_count() -> None:
     processor = TextProcessorForMCP()
     async with MCPClient(
         config={

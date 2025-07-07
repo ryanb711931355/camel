@@ -43,8 +43,14 @@ RETRY_DELAY = 3
 class NebulaGraph(BaseGraphStorage):
     @dependencies_required('nebula3')
     def __init__(
-        self, host, username, password, space, port=9669, timeout=10000
-    ):
+        self,
+        host: str,
+        username: str,
+        password: str,
+        space: str,
+        port: int = 9669,
+        timeout: int = 10000,
+    ) -> None:
         r"""Initializes the NebulaGraph client.
 
         Args:
@@ -135,7 +141,7 @@ class NebulaGraph(BaseGraphStorage):
         r"""Get the underlying graph storage client."""
         return self.session
 
-    def query(self, query: str) -> "ResultSet":  # type:ignore[override]
+    def query(self, query: str) -> "ResultSet":
         r"""Execute a query on the graph store.
 
         Args:
@@ -371,7 +377,7 @@ class NebulaGraph(BaseGraphStorage):
     def refresh_schema(self) -> None:
         r"""Refreshes the schema by fetching the latest schema details."""
         self.schema = self.get_schema()
-        self.structured_schema = self.get_structured_schema
+        self.structured_schema = self.get_structured_schema()
 
     @property
     def get_structured_schema(self) -> Dict[str, Any]:
@@ -400,7 +406,7 @@ class NebulaGraph(BaseGraphStorage):
 
         return structured_schema
 
-    def get_schema(self):
+    def get_schema(self) -> str:
         r"""Generates a schema string describing node and relationship
         properties and relationships.
 
@@ -426,7 +432,7 @@ class NebulaGraph(BaseGraphStorage):
 
         return schema
 
-    def get_indexes(self):
+    def get_indexes(self) -> List[str]:
         r"""Fetches the tag indexes from the database.
 
         Returns:

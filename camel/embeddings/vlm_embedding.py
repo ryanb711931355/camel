@@ -107,7 +107,7 @@ class VisionLanguageEmbedding(BaseEmbedding[Union[str, Image.Image]]):
                 and obj.__class__.__name__ == "Image"
             ):
                 image_input = self.processor(
-                    images=obj,
+                    images=[obj],
                     return_tensors="pt",
                     padding=True,
                     **image_processor_kwargs,
@@ -122,7 +122,7 @@ class VisionLanguageEmbedding(BaseEmbedding[Union[str, Image.Image]]):
                 result_list.append(image_feature)
             elif isinstance(obj, str):
                 text_input = self.processor(
-                    text=obj,
+                    text=[obj],
                     return_tensors="pt",
                     padding=True,
                     **tokenizer_kwargs,

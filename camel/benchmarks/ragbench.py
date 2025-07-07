@@ -170,7 +170,6 @@ def ragas_calculate_metrics(
 
     return calculated_metrics
 
-
 def ragas_evaluate_dataset(
     dataset: Dataset,
     contexts_field_name: Optional[str],

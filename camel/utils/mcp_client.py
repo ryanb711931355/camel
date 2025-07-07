@@ -541,7 +541,7 @@ class MCPClient:
         r"""Check if the client is currently connected."""
         return self._session is not None
 
-    async def list_mcp_tools(self):
+    async def list_mcp_tools(self) -> Any:
         r"""Retrieves the list of available tools from the connected MCP
         server.
 
@@ -555,7 +555,7 @@ class MCPClient:
         except Exception as e:
             raise e
 
-    def list_mcp_tools_sync(self):
+    def list_mcp_tools_sync(self) -> Any:
         r"""Synchronously retrieves the list of available tools from the
         connected MCP server.
 
@@ -767,7 +767,7 @@ class MCPClient:
 
     def _build_tool_schema(self, mcp_tool: types.Tool) -> Dict[str, Any]:
         r"""Build tool schema for OpenAI function calling format."""
-        input_schema = mcp_tool.inputSchema
+        input_schema = getattr(mcp_tool, 'inputSchema', {})
         properties = input_schema.get("properties", {})
         required = input_schema.get("required", [])
 
@@ -782,8 +782,7 @@ class MCPClient:
             "type": "function",
             "function": {
                 "name": mcp_tool.name,
-                "description": mcp_tool.description
-                or "No description provided.",
+                "description": getattr(mcp_tool, 'description', None) or "No description provided.",
                 "parameters": parameters,
             },
         }
@@ -857,7 +856,7 @@ class MCPClient:
 
         tool_descriptions = []
         for tool in self._tools:
-            desc = tool.description or 'No description'
+            desc = getattr(tool, 'description', None) or 'No description'
             description = f"- {tool.name}: {desc}"
             tool_descriptions.append(description)
 

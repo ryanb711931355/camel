@@ -113,7 +113,7 @@ def test_assistant_func_message_to_openai_tool_message(
 
 
 @pytest.mark.model_backend
-def test_roleplay_conversion_with_tools():
+def test_roleplay_conversion_with_tools() -> None:
     tools = MathToolkit().get_tools()
     model = ModelFactory.create(
         model_platform=ModelPlatformType.OPENAI,

@@ -447,6 +447,24 @@ class TicTacToeEnv(MultiStepEnv):
 
         return max(values) if is_x_turn else min(values)
 
+    @staticmethod
+    def check_winner(board: List[str]) -> Optional[str]:
+        """Check if there is a winner or if the game is a draw.
+
+        Args:
+            board (List[str]): The current game board as a list of strings.
+
+        Returns:
+            Optional[str]: 'X' if X wins, 'O' if O wins, 'draw' if it's a draw, None otherwise.
+        """
+        for combo in TicTacToeEnv.WIN_COMBINATIONS:
+            a, b, c = combo
+            if board[a] == board[b] == board[c] and board[a] != " ":
+                return board[a]
+        if " " not in board:
+            return "draw"
+        return None
+
     def _is_done(self) -> bool:
         r"""Check if the episode is done.
 

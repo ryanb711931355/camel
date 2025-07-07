@@ -120,7 +120,7 @@ class Worker(BaseNode, ABC):
         logger.info(f"{self} started.")
 
         # Keep track of running task coroutines
-        running_tasks: Set[asyncio.Task] = set()
+        running_tasks: set[asyncio.Task] = set()
 
         while self._running:
             try:

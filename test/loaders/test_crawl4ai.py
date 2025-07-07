@@ -101,7 +101,7 @@ async def test_scrape_success():
 
 
 @pytest.mark.asyncio
-async def test_structured_scrape_success():
+async def test_structured_scrape_success() -> None:
     dummy_result = DummyCrawlResult(
         markdown="Scraped markdown",
         cleaned_html="<html>scraped</html>",
@@ -125,7 +125,7 @@ async def test_structured_scrape_success():
 
 
 @pytest.mark.asyncio
-async def test_structured_scrape_failure():
+async def test_structured_scrape_failure() -> None:
     # Simulate a failure in the structured scrape method.
     with patch.object(
         Crawl4AI, "_run_crawler", new_callable=AsyncMock
