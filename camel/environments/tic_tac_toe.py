@@ -403,6 +403,7 @@ class TicTacToeEnv(MultiStepEnv):
             return value, {"x_non_loss_value": value}
 
     @staticmethod
+    @staticmethod
     def evaluate_position_for_x(
         board: List[str], is_x_turn: bool, depth: int = 0, max_depth: int = 10
     ) -> float:

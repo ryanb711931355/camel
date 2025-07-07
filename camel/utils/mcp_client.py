@@ -517,7 +517,7 @@ class MCPClient:
                     yield read_stream, write_stream, get_session_id
 
         elif transport_type == TransportType.WEBSOCKET:
-            from mcp.client.websocket import websocket_client
+            from mcp.client.streamable_http import streamablehttp_client
 
             # Ensure URL is not None for WebSocket
             if not self.config.url:
@@ -582,8 +582,8 @@ class MCPClient:
         """
         func_name = mcp_tool.name
         func_desc = mcp_tool.description or "No description provided."
-        parameters_schema = mcp_tool.inputSchema.get("properties", {})
-        required_params = mcp_tool.inputSchema.get("required", [])
+        parameters_schema = getattr(mcp_tool, 'inputSchema', {}).get("properties", {})
+        required_params = getattr(mcp_tool, 'inputSchema', {}).get("required", [])
 
         type_map = {
             "string": str,

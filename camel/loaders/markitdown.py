@@ -77,9 +77,9 @@ class MarkItDownLoader:
             llm_model (Optional[str]): Optional model name for the LLM.
                 (default: :obj:`None`)
         """
-        from markitdown import MarkItDown
-
         try:
+            from markitdown import MarkItDown
+
             self.converter = MarkItDown(
                 llm_client=llm_client, llm_model=llm_model
             )

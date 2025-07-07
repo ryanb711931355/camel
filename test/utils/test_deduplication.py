@@ -65,8 +65,8 @@ def test_deduplicate_internally_single_item():
     assert len(result.duplicate_to_target_map) == 0
 
 
-def test_deduplicate_internally_with_mock_embedding():
-    texts = ["Hello world!", "Hello world!", "HELLO WORLD!", "Something else"]
+def test_deduplicate_internally_with_mock_embedding() -> None:
+    texts: list[str] = ["Hello world!", "Hello world!", "HELLO WORLD!", "Something else"]
     mock_embedding_instance = MockEmbedding()
 
     result: DeduplicationResult = deduplicate_internally(
@@ -89,7 +89,7 @@ def test_deduplicate_internally_with_mock_embedding():
     # as duplicates. 3 is a special case here: the embedding is also identical,
     # so it should be a duplicate as well.
     # So total texts = 4, unique = [0], duplicates = [1->0, 2->0, 3->0].
-    expected_duplicate_map = {1: 0, 2: 0, 3: 0}
+    expected_duplicate_map: dict[int, int] = {1: 0, 2: 0, 3: 0}
     assert result.duplicate_to_target_map == expected_duplicate_map, (
         f"Expected duplicate map {expected_duplicate_map}, "
         f"got {result.duplicate_to_target_map}"

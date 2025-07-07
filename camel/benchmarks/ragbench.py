@@ -160,7 +160,7 @@ def ragas_calculate_metrics(
     if "faithfulness" in metrics_to_evaluate and pred_faithfulness_field:
         trues_hallucination = ~np.array(
             dataset[ground_truth_faithfulness_field]
-        )
+        ).astype(bool)
         preds_hallucination = 1 - np.array(
             dataset[pred_faithfulness_field], dtype=float
         )
