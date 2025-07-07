@@ -638,18 +638,19 @@ class FaissStorage(BaseVectorStorage):
                 # For inner product/cosine, higher is better
                 similarity = float(distances[0][i])
 
-            vector = self._vectors.get(vector_id)
-            if vector is not None:
-                vector = vector.tolist()
-            else:
-                vector = []  # type: ignore[assignment]
+            stored_vector = self._vectors.get(vector_id)
+            vector_list: List[float] = (
+                cast(List[float], stored_vector.tolist())
+                if stored_vector is not None
+                else []
+            )
 
             results.append(
                 VectorDBQueryResult.create(
                     similarity=similarity,
                     id=vector_id,
                     payload=self._payloads.get(vector_id, {}),
-                    vector=cast(List[float], vector),
+                    vector=vector_list,
                 )
             )
 

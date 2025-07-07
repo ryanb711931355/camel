@@ -440,7 +440,7 @@ class HtmlGenToolkit(BaseToolkit):
         self,
         model: Optional[BaseModelBackend] = None,
         timeout: Optional[float] = None,
-        workspace: Optional[str] = "./",
+        workspace: str = "./",
     ):
         r"""Initialize the HtmlGenToolkit.
 
@@ -452,7 +452,7 @@ class HtmlGenToolkit(BaseToolkit):
             timeout (Optional[float]): The timeout value for API requests
                 in seconds. If None, no timeout is applied.
                 (default: :obj:`None`)
-            workspace (Optional[str]): The workspace to use for the generation.
+            workspace (str): The workspace to use for the generation.
                 (default: :obj:`.`)
         """
         from camel.agents.chat_agent import ChatAgent

@@ -226,7 +226,7 @@ class HybridRetriever(BaseRetriever):
             rank_smoothing_factor,
         )
 
-        retrieved_info = {
+        retrieved_info: Dict[str, Any] = {
             "Original Query": query,
             "Retrieved Context": (
                 all_retrieved_info
