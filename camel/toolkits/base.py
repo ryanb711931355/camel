@@ -80,7 +80,7 @@ class RegisteredAgentToolkit:
     toolkit has this mixin and automatically register itself.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._agent: Optional["ChatAgent"] = None
 
     @property

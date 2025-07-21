@@ -3303,6 +3303,7 @@ class Workforce(BaseNode):
                     "description": child.description,
                     "type": type(child).__name__,
                 }
+                children_info.append(child_info)
 
                 if isinstance(child, SingleAgentWorker):
                     child_info["tools"] = list(child.worker.tool_dict.keys())

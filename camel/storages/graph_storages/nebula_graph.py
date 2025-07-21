@@ -371,7 +371,7 @@ class NebulaGraph(BaseGraphStorage):
     def refresh_schema(self) -> None:
         r"""Refreshes the schema by fetching the latest schema details."""
         self.schema = self.get_schema()
-        self.structured_schema = self.get_structured_schema
+        self.structured_schema = self.get_structured_schema()
 
     @property
     def get_structured_schema(self) -> Dict[str, Any]:
@@ -400,7 +400,7 @@ class NebulaGraph(BaseGraphStorage):
 
         return structured_schema
 
-    def get_schema(self):
+    def get_schema(self) -> str:
         r"""Generates a schema string describing node and relationship
         properties and relationships.
 
@@ -426,7 +426,7 @@ class NebulaGraph(BaseGraphStorage):
 
         return schema
 
-    def get_indexes(self):
+    def get_indexes(self) -> List[str]:
         r"""Fetches the tag indexes from the database.
 
         Returns:

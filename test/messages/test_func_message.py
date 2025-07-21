@@ -139,8 +139,8 @@ def test_roleplay_conversion_with_tools():
     records: List[ContextRecord] = (
         role_playing.assistant_agent.memory.retrieve()
     )
-    original_messages = []
-    sharegpt_msgs = []
+    original_messages: list = []
+    sharegpt_msgs: list = []
 
     for record in records:
         message = record.memory_record.message

@@ -183,7 +183,7 @@ def test_chat_agent_stored_messages():
 
 
 @pytest.mark.model_backend
-def test_chat_agent_step_with_structure_response(step_call_count=3):
+def test_chat_agent_step_with_structure_response(step_call_count: int = 3) -> None:
     system_msg = BaseMessage(
         role_name="assistant",
         role_type=RoleType.ASSISTANT,
@@ -960,7 +960,7 @@ def test_tool_calling_sync(step_call_count=3):
     for i in range(step_call_count):
         agent_response = agent.step(user_msg)
 
-        tool_calls: List[ToolCallingRecord] = [
+        tool_calls: list[ToolCallingRecord] = [
             call for call in agent_response.info['tool_calls']
         ]
 
