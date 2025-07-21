@@ -156,7 +156,7 @@ def test_parse_input_message_for_step_string():
     assert result.role_name == "User"
 
 
-def test_resolve_response_format_for_step():
+def test_resolve_response_format_for_step() -> None:
     r"""Tests response format resolution with valid and invalid names."""
 
     # Create a dummy response format for testing
@@ -165,7 +165,7 @@ def test_resolve_response_format_for_step():
         status: int
 
     # Server with registered response format
-    server = ChatAgentOpenAPIServer(
+    server: ChatAgentOpenAPIServer = ChatAgentOpenAPIServer(
         response_format_registry={"test_format": TestResponseFormat}
     )
 

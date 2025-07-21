@@ -486,7 +486,7 @@ class TicTacToeEnv(MultiStepEnv):
                 return board[a]
         # Check for draw.
         if all(cell != " " for cell in board):
-            return "draw"
+            return "draw"  # type: ignore[return-value]
         return None
 
     def render_board(self, board: List[str]) -> str:

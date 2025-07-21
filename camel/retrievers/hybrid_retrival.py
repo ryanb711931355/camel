@@ -162,8 +162,8 @@ class HybridRetriever(BaseRetriever):
         bm25_retriever_top_k: int = 50,
         return_detailed_info: bool = False,
     ) -> Union[
-        dict[str, Sequence[Collection[str]]],
-        dict[str, Sequence[Union[str, float]]],
+        Dict[str, Sequence[List[str]]],
+        Dict[str, Sequence[Union[str, float]]],
     ]:
         r"""Executes a hybrid retrieval query using both vector and BM25
         retrievers.

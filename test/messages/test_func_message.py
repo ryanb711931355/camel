@@ -113,7 +113,7 @@ def test_assistant_func_message_to_openai_tool_message(
 
 
 @pytest.mark.model_backend
-def test_roleplay_conversion_with_tools():
+def test_roleplay_conversion_with_tools() -> None:
     tools = MathToolkit().get_tools()
     model = ModelFactory.create(
         model_platform=ModelPlatformType.OPENAI,
@@ -139,8 +139,8 @@ def test_roleplay_conversion_with_tools():
     records: List[ContextRecord] = (
         role_playing.assistant_agent.memory.retrieve()
     )
-    original_messages = []
-    sharegpt_msgs = []
+    original_messages: List[BaseMessage] = []
+    sharegpt_msgs: List[Dict[str, Any]] = []
 
     for record in records:
         message = record.memory_record.message
@@ -152,7 +152,7 @@ def test_roleplay_conversion_with_tools():
         original_messages.append(message)
         sharegpt_msgs.append(message.to_sharegpt())
 
-    converted_back = []
+    converted_back: List[BaseMessage] = []
     for msg in sharegpt_msgs:
         message = BaseMessage.from_sharegpt(
             msg, function_format=HermesFunctionFormatter()
