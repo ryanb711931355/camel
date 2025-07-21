@@ -403,6 +403,7 @@ class TicTacToeEnv(MultiStepEnv):
             return value, {"x_non_loss_value": value}
 
     @staticmethod
+    @staticmethod
     def evaluate_position_for_x(
         board: List[str], is_x_turn: bool, depth: int = 0, max_depth: int = 10
     ) -> float:
@@ -486,7 +487,7 @@ class TicTacToeEnv(MultiStepEnv):
                 return board[a]
         # Check for draw.
         if all(cell != " " for cell in board):
-            return "draw"
+            return "draw"  # type: ignore[return-value]
         return None
 
     def render_board(self, board: List[str]) -> str:

@@ -397,6 +397,7 @@ class InternalPythonInterpreter(BaseInterpreter):
             )
 
     def _execute_call(self, call: ast.Call) -> Any:
+        from typing import Any
         callable_func = self._execute_ast(call.func)
 
         # Todo deal with args

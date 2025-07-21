@@ -3296,13 +3296,14 @@ class Workforce(BaseNode):
                 >>> for child in children:
                 ...     print(f"{child['type']}: {child['description']}")
             """
-            children_info: List[Dict[str, Any]] = []
-            for child in workforce_instance._children:
-                child_info: Dict[str, Any] = {
-                    "node_id": child.node_id,
-                    "description": child.description,
-                    "type": type(child).__name__,
-                }
+            def get_children_info() -> List[Dict[str, Any]]:
+                children_info: List[Dict[str, Any]] = []
+                for child in workforce_instance._children:
+                    child_info: Dict[str, Any] = {
+                        "node_id": child.node_id,
+                        "description": child.description,
+                        "type": type(child).__name__,
+                    }
 
                 if isinstance(child, SingleAgentWorker):
                     child_info["tools"] = list(child.worker.tool_dict.keys())

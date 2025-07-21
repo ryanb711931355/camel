@@ -207,9 +207,11 @@ class MistralModel(BaseModelBackend):
                     else [tool_calls]
                 )
                 for tool_call in tool_calls_list:
+                    from typing import cast, Dict, Any
+                    tool_call = cast(Dict[str, Any], tool_call)
                     mistral_function_call = FunctionCall(
-                        name=tool_call["function"].get("name"),  # type: ignore[attr-defined]
-                        arguments=tool_call["function"].get("arguments"),  # type: ignore[attr-defined]
+                        name=tool_call["function"].get("name"),
+                        arguments=tool_call["function"].get("arguments"),
                     )
 
             tool_calls = None
