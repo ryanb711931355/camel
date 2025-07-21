@@ -208,8 +208,8 @@ class MistralModel(BaseModelBackend):
                 )
                 for tool_call in tool_calls_list:
                     mistral_function_call = FunctionCall(
-                        name=tool_call["function"].get("name"),  # type: ignore[attr-defined]
-                        arguments=tool_call["function"].get("arguments"),  # type: ignore[attr-defined]
+                        name=tool_call["function"].get("name"),  # type: ignore[index]
+                        arguments=tool_call["function"].get("arguments"),  # type: ignore[index]
                     )
 
             tool_calls = None
@@ -316,7 +316,7 @@ class MistralModel(BaseModelBackend):
                     [message.get("content") for message in messages]  # type: ignore[misc]
                 ),
                 prompt_tokens=openai_response.usage.prompt_tokens,  # type: ignore[union-attr]
-                completion=openai_response.choices[0].message.content,
+                completion=openai_response.choices[0].message.content,  # type: ignore[index]
                 completion_tokens=openai_response.usage.completion_tokens,  # type: ignore[union-attr]
                 model=self.model_type,
             )

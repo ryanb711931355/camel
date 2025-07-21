@@ -763,9 +763,9 @@ def test_set_output_language():
 
     # Verify that the system message is updated with the new output language
     updated_system_message = {
-        'role': 'system',
-        'content': 'You are a help assistant.\nRegardless of the '
-        'input language, you must output text in Arabic.',
+        "role": "system",
+        "content": "You are a help assistant.\nRegardless of the "
+        "input language, you must output text in Arabic.",
     }
     memory_content = agent.memory.get_context()
     assert memory_content[0][0] == updated_system_message
@@ -958,7 +958,7 @@ def test_tool_calling_sync(step_call_count=3):
     )
 
     for i in range(step_call_count):
-        agent_response = agent.step(user_msg)
+        agent_response: ChatAgentResponse = agent.step(user_msg)
 
         tool_calls: List[ToolCallingRecord] = [
             call for call in agent_response.info['tool_calls']

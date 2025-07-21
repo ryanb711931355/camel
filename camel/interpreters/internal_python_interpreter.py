@@ -401,8 +401,8 @@ class InternalPythonInterpreter(BaseInterpreter):
 
         # Todo deal with args
         args = [self._execute_ast(arg) for arg in call.args]
-        kwargs = {
-            keyword.arg: self._execute_ast(keyword.value)
+        kwargs: Dict[str, Any] = {
+            str(keyword.arg): self._execute_ast(keyword.value)
             for keyword in call.keywords
         }
         return callable_func(*args, **kwargs)
@@ -506,7 +506,7 @@ class InternalPythonInterpreter(BaseInterpreter):
             alias = module.asname or module.name
             self.state[alias] = importlib.import_module(module.name)
 
-    def _execute_import_from(self, import_from: ast.ImportFrom):
+    def _execute_import_from(self, import_from: ast.ImportFrom) -> None:
         if import_from.module is None:
             raise InterpreterError("\"from . import\" is not supported.")
         for import_name in import_from.names:
@@ -605,6 +605,6 @@ class InternalPythonInterpreter(BaseInterpreter):
             )
             stdout, stderr = proc.communicate()
 
-            return stdout, stderr
+            return stdout or "", stderr or ""
         except Exception as e:
             raise InterpreterError(f"Error executing command: {e}")

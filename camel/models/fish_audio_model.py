@@ -44,6 +44,10 @@ class FishAudioModel(BaseAudioModel):
         self._url = url or os.environ.get(
             "FISHAUDIO_API_BASE_URL", "https://api.fish.audio"
         )
+        if self._api_key is None:
+            raise ValueError(
+                "api_key must be provided or set in the FISHAUDIO_API_KEY environment variable."
+            )
         self.session = Session(apikey=self._api_key, base_url=self._url)
 
     def text_to_speech(
@@ -153,4 +157,7 @@ class FishAudioModel(BaseAudioModel):
                 **kwargs,
             )
         )
-        return response.text
+        text = response.text
+        if not isinstance(text, str):
+            raise ValueError("Unexpected response type from speech-to-text.")
+        return text

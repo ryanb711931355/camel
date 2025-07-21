@@ -710,8 +710,8 @@ class PPTXToolkit(BaseToolkit):
                 text_frame = shape.text_frame
                 text_frame.clear()
                 paragraph = text_frame.paragraphs[0]
-                paragraph.alignment = pptx.enum.text.PP_ALIGN.CENTER
-                text_frame.vertical_anchor = pptx.enum.text.MSO_ANCHOR.MIDDLE
+                paragraph.alignment = pptx.enum.text.PP_ALIGN.CENTER  # type: ignore[attr-defined]
+                text_frame.vertical_anchor = pptx.enum.text.MSO_ANCHOR.MIDDLE  # type: ignore[attr-defined]
                 self._format_text(
                     paragraph, step.removeprefix(STEP_BY_STEP_PROCESS_MARKER)
                 )

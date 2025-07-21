@@ -65,7 +65,7 @@ def test_deduplicate_internally_single_item():
     assert len(result.duplicate_to_target_map) == 0
 
 
-def test_deduplicate_internally_with_mock_embedding():
+def test_deduplicate_internally_with_mock_embedding() -> None:
     texts = ["Hello world!", "Hello world!", "HELLO WORLD!", "Something else"]
     mock_embedding_instance = MockEmbedding()
 

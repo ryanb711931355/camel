@@ -105,7 +105,7 @@ class Worker(BaseNode, ABC):
             self._active_task_ids.discard(task.id)
 
     @check_if_running(False)
-    async def _listen_to_channel(self):
+    async def _listen_to_channel(self) -> None:
         r"""Continuously listen to the channel and process assigned tasks.
 
         This method supports parallel task execution without artificial limits.

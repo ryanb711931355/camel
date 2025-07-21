@@ -312,6 +312,11 @@ class TicTacToeEnv(MultiStepEnv):
             self._state["game_over"] = True
             self._state["winner"] = winner
 
+        # Check if the board is full (draw).
+        if all(cell != " " for cell in board):
+            self._state["game_over"] = True
+            self._state["winner"] = "draw"
+
     def _get_next_observation(self) -> Observation:
         r"""Get the next observation based on the current state.
 
@@ -483,7 +488,7 @@ class TicTacToeEnv(MultiStepEnv):
         # Check all win combinations.
         for a, b, c in TicTacToeEnv.WIN_COMBINATIONS:
             if board[a] != " " and board[a] == board[b] == board[c]:
-                return board[a]
+                return board[a]  # type: ignore[return-value]
         # Check for draw.
         if all(cell != " " for cell in board):
             return "draw"
