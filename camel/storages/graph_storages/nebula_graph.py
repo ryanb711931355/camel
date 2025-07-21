@@ -43,7 +43,13 @@ RETRY_DELAY = 3
 class NebulaGraph(BaseGraphStorage):
     @dependencies_required('nebula3')
     def __init__(
-        self, host, username, password, space, port=9669, timeout=10000
+        self,
+        host: str,
+        username: str,
+        password: str,
+        space: str,
+        port: int = 9669,
+        timeout: int = 10000,
     ):
         r"""Initializes the NebulaGraph client.
 
@@ -58,12 +64,12 @@ class NebulaGraph(BaseGraphStorage):
             timeout (int, optional): The connection timeout in milliseconds.
                 (default: :obj:`10000`)
         """
-        self.host = host
-        self.username = username
-        self.password = password
-        self.space = space
-        self.timeout = timeout
-        self.port = port
+        self.host: str = host
+        self.username: str = username
+        self.password: str = password
+        self.space: str = space
+        self.timeout: int = timeout
+        self.port: int = port
         self.schema: str = ""
         self.structured_schema: Dict[str, Any] = {}
         self.connection_pool = self._init_connection_pool()
